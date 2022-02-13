@@ -15,7 +15,7 @@ const customers = [
     checkByCompany: "BBB股份有限公司",
     checkByName: "陳添財",
     checkByTelephone: "(07)5570112",
-    checkByTicketNumber: 5,
+    checkByTicketNumber: 1,
     checkFor: null,
     checkForNumber: null,
     checkForCompany: null,
@@ -64,7 +64,7 @@ const customers = [
     checkForCompany: "AA建設股份有限公司",
     checkForName: "柯俊吉",
     checkForTelephone: "(07)5563122",
-    checkForTicketNumber: 5
+    checkForTicketNumber: 1
   },
   {
     id: 5,

@@ -307,6 +307,24 @@ const CheckModal = ({ open, id, onClose, onSuccess }) => {
             sx={{ mt: 1 }}
           />
           <Divider sx={{ my: 1 }}>搜尋結果</Divider>
+          {customersIsLoading && (
+            <Box sx={{ mt: 3 }}>
+              <Skeleton animation="wave" />
+              <Skeleton animation="wave" />
+              <Skeleton animation="wave" />
+              <Skeleton animation="wave" />
+              <Skeleton animation="wave" />
+              <Skeleton animation="wave" />
+              <Skeleton animation="wave" />
+            </Box>
+          )}
+          {!customersIsLoading && customersData?.customers.length <= 0 && (
+            <Box
+              sx={{ display: "block", textAlign: "center", color: grey[600], fontStyle: "italic" }}
+            >
+              無任何資料
+            </Box>
+          )}
           <List sx={{ "& ul": { padding: 0 } }} subheader={<li />}>
             {customersData?.customers.map(customer => {
               const { number, company, status, id: customerId, name, checkBy } = customer;

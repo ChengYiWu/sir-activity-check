@@ -47,7 +47,7 @@ const Header = () => {
             <Button
               variant="outlined"
               onClick={handleOpenUserMenu}
-              startIcon={<Person sx={{ color: "white", marginRight: "0px" }} />}
+              // startIcon={<Person sx={{ color: "white", marginRight: "0px" }} />}
               sx={{
                 color: "white",
                 "& .MuiButton-startIcon": {

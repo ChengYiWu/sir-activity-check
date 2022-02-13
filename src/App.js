@@ -48,7 +48,7 @@ function App() {
         <Box component="main" sx={{ height: "100%", px: 2, py: 1 }}>
           <Router history={history}>
             <Switch>
-              <Route exact strict path={"/Login"} component={Login} />
+              <Route path={"/Login"} component={Login} />
               <ProtecedRoute path={"/"} component={Home} />
               <Route component={NotFoundPage} />
             </Switch>

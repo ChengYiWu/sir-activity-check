@@ -200,14 +200,14 @@ const Home = () => {
           的委託出席確定要取消嗎?
           {checkFor && (
             <Box sx={{ fontSize: "small", color: red[600] }}>
-              （請務必確認已回收號碼牌
+              (請務必確認已回收號碼牌
               <Box
                 component="span"
                 sx={{ color: grey[800], fontSize: "large", fontWeight: 600, mx: "3px" }}
               >
                 {checkForTicketNumber}
               </Box>
-              號 ）
+              號)
             </Box>
           )}
         </Stack>
@@ -224,7 +224,7 @@ const Home = () => {
     },
     confirmTitle: () => "取消報到",
     confirmContent: selectedCustomer => {
-      const { name, company, checkFor, checkForName } = selectedCustomer;
+      const { name, company, checkFor, checkForName, checkForTicketNumber } = selectedCustomer;
       return (
         <Stack spacing={2}>
           <Box component="span" sx={{ fontWeight: 600, fontSize: "large" }}>
@@ -233,11 +233,18 @@ const Home = () => {
           的報到紀錄確定要取消嗎?
           {checkFor && (
             <Box sx={{ fontSize: "small", color: red[600] }}>
-              （
+              (
               <Box component="span" sx={{ color: grey[800], fontWeight: 600, mx: "3px" }}>
                 {checkForName}
               </Box>
-              的委託出席將會被一併取消）
+              的委託出席將會被一併取消，請回收
+              <Box
+                component="span"
+                sx={{ color: grey[800], fontSize: "large", fontWeight: 600, mx: "3px" }}
+              >
+                {checkForTicketNumber}
+              </Box>{" "}
+              號號碼牌)
             </Box>
           )}
         </Stack>
@@ -344,50 +351,6 @@ const Home = () => {
         onClose={handleCloseModal}
         onSuccess={handleSuccessModal}
       />
-      {/* <ConfirmDialog
-        title="確認"
-        content={
-          cancelCheckForCustomer ? `要取消 [ ${cancelCheckForCustomer.name} ] 的委託報到嗎?` : ""
-        }
-        open={cancelCheckForConfirmModal.open}
-        onClose={onCancelCheckForClose}
-        onOk={onCancelCheckForOk}
-        okLoading={cancelCheckForMutation.isLoading}
-      /> */}
-      {/* <Snackbar {...cancelCheckForSnackbar} autoHideDuration={6000}>
-        {cancelCheckForMutation.data?.message && (
-          <Alert onClose={cancelCheckForSnackbar.onClose} severity="success" sx={{ width: "100%" }}>
-            {cancelCheckForMutation.data.message}
-          </Alert>
-        )}
-      </Snackbar> */}
-      {/* <ConfirmDialog
-        title="確認"
-        content={cancelCheckCustomer ? `要取消 [ ${cancelCheckCustomer.name} ] 的報到嗎?` : ""}
-        open={cancelCheckConfirmModal.open}
-        onClose={onCancelCheckClose}
-        onOk={onCancelCheckOk}
-        okLoading={cancelCheckMutation.isLoading}
-      />
-      <Snackbar {...cancelCheckSnackbar} autoHideDuration={5000}>
-        {cancelCheckMutation.data?.message && (
-          <Alert onClose={cancelCheckSnackbar.onClose} severity="success" sx={{ width: "100%" }}>
-            {cancelCheckMutation.data.message}
-          </Alert>
-        )}
-      </Snackbar>
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={5000}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        onClose={handleSnackbarClose}
-      >
-        {snackbar.message && (
-          <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: "100%" }}>
-            {snackbar.message}
-          </Alert>
-        )}
-      </Snackbar> */}
     </>
   );
 };
