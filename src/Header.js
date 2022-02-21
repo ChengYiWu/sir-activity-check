@@ -37,32 +37,38 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="relative">
+    <AppBar position="fixed">
       <Toolbar>
-        <Typography variant="h6" noWrap component="div">
-          不動產工會報到
+        <Typography variant="h6" noWrap component="div" onClick={() => {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          });
+        }}>
+          高雄市不動產開發商業同業公會
         </Typography>
         {!!userInfo && (
           <Box sx={{ ml: "auto" }}>
-            <Button
+            {/* <Button
               variant="outlined"
               onClick={handleOpenUserMenu}
-              // startIcon={<Person sx={{ color: "white", marginRight: "0px" }} />}
-              sx={{
-                color: "white",
-                "& .MuiButton-startIcon": {
-                  marginRight: "0px"
-                }
-              }}
+              startIcon={<Person sx={{ color: "white", marginRight: "0px" }} />}
+              // sx={{
+              //   color: "white",
+              //   "& .MuiButton-startIcon": {
+              //     marginRight: "0px"
+              //   }
+              // }}
             >
-              <Box>{userInfo.username}</Box>
+              <Box>{userInfo.username}</Box> 
               <Box sx={{ marginLeft: "2px" }}>({userInfo.telephone})</Box>
-            </Button>
-            {/* <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar alt="login-user">
+            </Button> */}
+            <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <Person />
+              {/* <Avatar alt="login-user" icon>
                 {userInfo.username.length >= 1 ? userInfo.username[0] : userInfo.username}
-              </Avatar>
-            </IconButton> */}
+              </Avatar> */}
+            </IconButton>
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
@@ -95,3 +101,22 @@ const Header = () => {
 };
 
 export default Header;
+
+{
+  /* <Button
+              variant="outlined"
+              onClick={handleOpenUserMenu}
+              // startIcon={<Person sx={{ color: "white", marginRight: "0px" }} />}
+              sx={{
+                color: "white",
+                "& .MuiButton-startIcon": {
+                  marginRight: "0px"
+                }
+              }}
+            >
+              <Box>{userInfo.username}</Box> */
+}
+{
+  /* <Box sx={{ marginLeft: "2px" }}>({userInfo.telephone})</Box>
+            </Button> */
+}

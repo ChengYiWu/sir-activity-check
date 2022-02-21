@@ -11,19 +11,19 @@ export const authService = {
     try {
       const { telephone, password } = loginInfo;
 
-      // const response = await ajax.post("auth/login", {
-      //   telephone,
-      //   password
-      // });
+      const response = await ajax.post("auth/login", {
+        telephone,
+        password
+      });
 
-      // return response.data;
+      return response.data;
 
-      return {
-        telephone: "0912345678",
-        token: "XXX",
-        username: "華小聯",
-        uuid: "1bfc6a30-857c-11e8-bf4f-8fffb96a95c6"
-      };
+      // return {
+      //   telephone: "0912345678",
+      //   token: "XXX",
+      //   username: "小幫手",
+      //   uuid: "1bfc6a30-857c-11e8-bf4f-8fffb96a95c6"
+      // };
     } catch (error) {
       return Promise.reject({ ...error, message: error.serverMessage });
     }

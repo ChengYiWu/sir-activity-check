@@ -35,7 +35,7 @@ function App() {
       <Box
         component="div"
         sx={{
-          height: "fill-available",
+          // height: "fill-available",
           display: "flex",
           flexDirection: "column"
           // height: "100vh",
@@ -45,7 +45,7 @@ function App() {
         {/* Header */}
         <Header />
         {/* Content */}
-        <Box component="main" sx={{ height: "100%", px: 2, py: 1 }}>
+        <Box component="main" sx={{ height: "auto", px: 2, py: 1, mt: 7 }}>
           <Router history={history}>
             <Switch>
               <Route path={"/Login"} component={Login} />

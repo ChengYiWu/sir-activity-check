@@ -20,9 +20,10 @@ import { useDispatch } from "react-redux";
 import { useMutation } from "react-query";
 import CustomerListItem from "../components/CustomerListItem";
 import CheckModal from "../components/CheckModal";
+import CheckForModal from "../components/CheckForModal";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { grey, red } from "@mui/material/colors";
-import { Close } from "@mui/icons-material";
+import { Close, Info } from "@mui/icons-material";
 
 const useCancelCheck = ({
   service,
@@ -149,6 +150,15 @@ const Home = () => {
       open: false
     });
   };
+
+  const [checkForModal, setCheckForModal] = useState({ id: null, open: false });
+  const handleCloseCheckForModal = () => {
+    setCheckForModal({
+      id: null,
+      open: false
+    });
+  };
+
   const handleSuccessModal = response => {
     handleCloseModal();
     // handleKeywordChange();
@@ -175,8 +185,41 @@ const Home = () => {
     }, 100);
   };
 
+  const handleSuccessCheckForModal = response => {
+    handleCloseCheckForModal();
+    // handleKeywordChange();
+    updateCustomers(response.newCustomers);
+    setTimeout(() => {
+      dispatch(
+        modalActions.show("SUCCESS", {
+          content: (
+            <Box>
+              委託成功
+              {response.ticketNumber && (
+                <Box>
+                  （委託票領取號碼：
+                  <Typography variant="h6" sx={{ display: "inline-block" }}>
+                    {response.ticketNumber}
+                  </Typography>
+                  ）
+                </Box>
+              )}
+            </Box>
+          )
+        })
+      );
+    }, 100);
+  };
+
   const handleCheck = id => {
     setModal({
+      id,
+      open: true
+    });
+  };
+
+  const handleCheckFor = id => {
+    setCheckForModal({
       id,
       open: true
     });
@@ -252,13 +295,63 @@ const Home = () => {
     }
   });
 
+  const totalCheckCount = statistics?.totalCheckCount || 0;
+  const totalCustomerCount = totalCheckCount + (statistics?.totalUncheckCount || 0);
+  const totalCheckForCount = statistics?.totalCheckForCount || 0;
+  const totalSkipCheckForCount = statistics?.totalSkipCheckForCount || 0;
+  const checkForLimit = Math.floor(totalCheckCount / 2);
+  const avaliableCheckForTicketNumber =
+    Math.min(totalCheckForCount, checkForLimit) + totalSkipCheckForCount;
+
+  const handleOpenAvaliableInfo = () => {
+    dispatch(
+      modalActions.show("INFO", {
+        title: "說明",
+        content: (
+          <div>
+            有效委託投票數不得超過本人投票數的
+            <Box component="span" sx={{ fontSize: 26, color: red[600], mx: "6px" }}>
+              1/2
+            </Box>
+            。
+          </div>
+        )
+      })
+    );
+  };
+
   return (
     <>
       <Box sx={{ mt: 1 }}>
         <Box sx={{ mb: 2 }}>
-          已到 {statistics?.totalCheckCount || 0} 人 / 未到 {statistics?.totalUncheckCount || 0} 人
-          / 已委 {statistics?.totalCheckForCount || 0} 人 / 忽略{" "}
-          {statistics?.totalSkipCheckForCount || 0} 人
+          會員數 {totalCustomerCount} 位 / 報到 {totalCheckCount} 位 / 委託出席 {totalCheckForCount}{" "}
+          人
+          <Typography
+            variant="caption"
+            component="div"
+            sx={{ color: grey[600] }}
+            onClick={handleOpenAvaliableInfo}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
+              <Info sx={{ fontSize: 14, mr: "3px" }} />
+              <Box component="span">
+                有效委託投票數
+                <Box component="span" sx={{ color: grey[800], fontSize: "large", mx: "3px" }}>
+                  {checkForLimit}
+                </Box>
+                位
+                {checkForLimit > 0 && (
+                  <span>
+                    ，領取號碼為
+                    <Box component="span" sx={{ color: grey[800], fontSize: "large", mx: "3px" }}>
+                      {avaliableCheckForTicketNumber}
+                    </Box>
+                    號（含）以前。
+                  </span>
+                )}
+              </Box>
+            </Box>
+          </Typography>
         </Box>
         <TextField
           fullWidth
@@ -295,8 +388,8 @@ const Home = () => {
               width: "100%",
               bgcolor: "background.paper",
               position: "relative",
-              overflow: "auto",
-              maxHeight: "calc(100vh - 200px - 90px)",
+              // overflow: "auto",
+              // maxHeight: "calc(100vh - 200px - 90px)",
               "& ul": { padding: 0 }
             }}
             subheader={<li />}
@@ -307,7 +400,7 @@ const Home = () => {
               return (
                 <li key={`section-${number}`}>
                   <ul>
-                    <ListSubheader>
+                    <ListSubheader sx={{ top: "56px" }}>
                       {number} - {company}
                     </ListSubheader>
                     {customers.map(customer => (
@@ -317,6 +410,7 @@ const Home = () => {
                           onCheck={handleCheck}
                           onCancelCheckFor={onCancelCheckForOpen}
                           onCancelCheck={onCancelCheckOpen}
+                          onCheckFor={handleCheckFor}
                         />
                       </ListItem>
                     ))}
@@ -350,6 +444,12 @@ const Home = () => {
         id={modal.id}
         onClose={handleCloseModal}
         onSuccess={handleSuccessModal}
+      />
+      <CheckForModal
+        open={checkForModal.open}
+        id={checkForModal.id}
+        onClose={handleCloseCheckForModal}
+        onSuccess={handleSuccessCheckForModal}
       />
     </>
   );

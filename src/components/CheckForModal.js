@@ -59,7 +59,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CheckModal = ({ open, id, onClose, onSuccess }) => {
+const CheckForModal = ({ open, id, onClose, onSuccess }) => {
   const {
     mutate: getCustomer,
     isLoading: customerIsLoading,
@@ -96,9 +96,9 @@ const CheckModal = ({ open, id, onClose, onSuccess }) => {
 
   const { handleSubmit, getValues, register, errors, control, watch, setValue, reset } = useForm({
     defaultValues: {
-      checkFor: false,
       keyword: null,
-      checkForCustomer: null
+      checkForCustomer: null,
+      checkFor: true
     }
   });
 
@@ -167,7 +167,7 @@ const CheckModal = ({ open, id, onClose, onSuccess }) => {
             <Close />
           </IconButton>
           <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            報到操作
+            委託出席操作
           </Typography>
         </Toolbar>
       </AppBar>
@@ -233,37 +233,30 @@ const CheckModal = ({ open, id, onClose, onSuccess }) => {
                 <Controller
                   name="checkFor"
                   control={control}
-                  render={props => (
-                    <Switch
-                      onChange={e => props.onChange(e.target.checked)}
-                      checked={props.value}
-                      color="primary"
-                    />
-                  )}
+                  render={props => <Switch checked={true} color="primary" disabled={true} />}
                 />
               }
               label="代理他人出席"
               labelPlacement="end"
             />
-            {isCheckFor && (
-              <Button
-                fullWidth
-                variant="outlined"
-                color={checkForCustomer ? "primary" : "warning"}
-                onClick={handleCheckForClick}
-                sx={{
-                  borderStyle: checkForCustomer ? "solid" : "dashed"
-                }}
-              >
-                {checkForCustomer ? (
-                  <span>
-                    {checkForCustomer.number}-{checkForCustomer.company} / {checkForCustomer.name}
-                  </span>
-                ) : (
-                  <span>請選擇代理出席人員</span>
-                )}
-              </Button>
-            )}
+
+            <Button
+              fullWidth
+              variant="outlined"
+              color={checkForCustomer ? "primary" : "warning"}
+              onClick={handleCheckForClick}
+              sx={{
+                borderStyle: checkForCustomer ? "solid" : "dashed"
+              }}
+            >
+              {checkForCustomer ? (
+                <span>
+                  {checkForCustomer.number}-{checkForCustomer.company} / {checkForCustomer.name}
+                </span>
+              ) : (
+                <span>請選擇代理出席人員</span>
+              )}
+            </Button>
           </Box>
         )}
       </DialogContent>
@@ -281,7 +274,7 @@ const CheckModal = ({ open, id, onClose, onSuccess }) => {
           loading={customerIsLoading || checkIsLoading}
           onClick={handleSubmit(handleCheck)}
         >
-          {isCheckFor && !checkForCustomer ? "請選擇代理出席人員" : "確定報到"}
+          {isCheckFor && !checkForCustomer ? "請選擇代理出席人員" : "確定委託出席"}
         </LoadingButton>
       </DialogActions>
       <Dialog onClose={handleCloseCheckForModal} open={checkForModal} fullWidth>
@@ -359,47 +352,4 @@ const CheckModal = ({ open, id, onClose, onSuccess }) => {
   );
 };
 
-export default CheckModal;
-
-// <Controller
-//   control={control}
-//   render={props => {
-//     console.log("props", props);
-//     return (
-//       <Autocomplete
-//         freeSolo
-//         fullWidth
-//         options={customersData || []}
-//         loading={customersIsLoading}
-//         noOptionsText="尚無任何資料"
-//         // filterOptions={(options, state) => options}
-//         renderInput={params => {
-//           console.log("params", params);
-//           return (
-//             <TextField
-//               {...params}
-//               name="keyword"
-//               onChange={(e1, e2) => {
-//                 props.onChange(e1.target.value);
-//               }}
-//               value={props.value}
-//               // fullWidth
-//               // focused
-//               // label="代理出席人員"
-//               // error={!!errors.keyword}
-//               // helperText={errors.keyword?.message || "請至少輸入 3 碼證號數字"}
-//               // size="small"
-//               // onChange={handleKeywordChange}
-//             />
-//           );
-//         }}
-//         getOptionLabel={option => `${option.number}-${option.company}|${option.name}`}
-//         renderOption={(props, option) => (
-//           <Box component="li" sx={{}} {...props}>
-//             {option.number}-{option.company}|{option.name}
-//           </Box>
-//         )}
-//       />
-//     );
-//   }}
-// />
+export default CheckForModal;

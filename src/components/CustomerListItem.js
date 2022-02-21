@@ -13,7 +13,7 @@ import {
 import { grey, deepOrange } from "@mui/material/colors";
 import CustomerListItemStatus from "./CustomerListItemStatus";
 
-const CustomerListItem = ({ customer, onCheck, onCancelCheck, onCancelCheckFor }) => {
+const CustomerListItem = ({ customer, onCheck, onCancelCheck, onCancelCheckFor, onCheckFor }) => {
   const {
     id,
     name,
@@ -128,7 +128,7 @@ const CustomerListItem = ({ customer, onCheck, onCancelCheck, onCancelCheckFor }
             >
               取消報到
             </Button>
-            {checkFor && (
+            {checkFor ? (
               <Button
                 size="large"
                 color="error"
@@ -137,6 +137,16 @@ const CustomerListItem = ({ customer, onCheck, onCancelCheck, onCancelCheckFor }
                 onClick={() => onCancelCheckFor(id)}
               >
                 取消代理出席
+              </Button>
+            ) : (
+              <Button
+                size="large"
+                color="primary"
+                variant="contained"
+                fullWidth
+                onClick={() => onCheckFor(id)}
+              >
+                加入代理出席
               </Button>
             )}
           </>

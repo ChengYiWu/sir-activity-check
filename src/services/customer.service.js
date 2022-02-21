@@ -4,8 +4,8 @@ const customers = [
   {
     id: 1,
     number: "000004",
-    company: "AA建設股份有限公司",
-    name: "柯X吉",
+    company: "光*建設股份有限公司",
+    name: "柯*吉",
     title: "董事長",
     telephone: "(07)5563122",
     address: "高雄市三民區1號",
@@ -25,9 +25,9 @@ const customers = [
   {
     id: 2,
     number: "000004",
-    company: "AA建設股份有限公司",
-    name: "林X華",
-    title: "秘書",
+    company: "光*建設股份有限公司",
+    name: "陳*華",
+    title: "經理",
     telephone: "(07)5563122",
     address: "高雄市三民區1號",
     status: "uncheck",
@@ -37,8 +37,8 @@ const customers = [
   {
     id: 3,
     number: "000004",
-    company: "AA建設股份有限公司",
-    name: "陳X明",
+    company: "光*建設股份有限公司",
+    name: "陳*明",
     title: "經理",
     telephone: "(07)5563122",
     address: "高雄市三民區1號",
@@ -49,7 +49,7 @@ const customers = [
   {
     id: 4,
     number: "000005",
-    company: "BBB股份有限公司",
+    company: "國*建設股份有限公司",
     name: "陳X財",
     title: "董事長",
     telephone: "(07)5570112",
@@ -69,8 +69,8 @@ const customers = [
   {
     id: 5,
     number: "000005",
-    company: "BBB股份有限公司",
-    name: "陳X天",
+    company: "國*建設股份有限公司",
+    name: "陳*天",
     title: "經理",
     telephone: "(07)5570112",
     address: "高雄市三民區10號",
@@ -79,8 +79,8 @@ const customers = [
   {
     id: 6,
     number: "000005",
-    company: "BBB股份有限公司",
-    name: "劉地滑",
+    company: "國*建設股份有限公司",
+    name: "劉*滑",
     title: "總裁",
     telephone: "(07)5570112",
     address: "高雄市三民區10號",
@@ -89,8 +89,8 @@ const customers = [
   {
     id: 7,
     number: "000006",
-    company: "CCC開發股份有限公司",
-    name: "陸X廷",
+    company: "華*聯開發股份有限公司",
+    name: "陸*廷",
     title: "董事長",
     telephone: "(07)5570112",
     address: "高雄市三民區10號",
@@ -99,13 +99,73 @@ const customers = [
   {
     id: 8,
     number: "000006",
-    company: "CCC開發股份有限公司",
-    name: "吳X德",
+    company: "華*聯開發股份有限公司",
+    name: "吳*德",
     title: "總經理",
     telephone: "(07)5570112",
     address: "高雄市三民區10號",
     status: "uncheck"
-  }
+  },
+  {
+    id: 9,
+    number: "000006",
+    company: "華*聯開發股份有限公司",
+    name: "吳*辰",
+    title: "經理",
+    telephone: "(07)5570112",
+    address: "高雄市三民區10號",
+    status: "uncheck"
+  },
+  {
+    id: 10,
+    number: "000006",
+    company: "華*聯開發股份有限公司",
+    name: "鄭*華",
+    title: "經理",
+    telephone: "(07)5570112",
+    address: "高雄市三民區10號",
+    status: "uncheck"
+  },
+  {
+    id: 11,
+    number: "000006",
+    company: "華*聯開發股份有限公司",
+    name: "游*宏",
+    title: "經理",
+    telephone: "(07)5570112",
+    address: "高雄市三民區10號",
+    status: "uncheck"
+  },
+  {
+    id: 12,
+    number: "000006",
+    company: "華*聯開發股份有限公司",
+    name: "蔡*貞",
+    title: "經理",
+    telephone: "(07)5570112",
+    address: "高雄市三民區10號",
+    status: "uncheck"
+  },
+  {
+    id: 13,
+    number: "000007",
+    company: "飛*建築股份有限公司",
+    name: "陳*華",
+    title: "經理",
+    telephone: "(07)5570112",
+    address: "高雄市三民區10號",
+    status: "uncheck"
+  },
+  {
+    id: 14,
+    number: "000007",
+    company: "飛*建築股份有限公司",
+    name: "鄭*華",
+    title: "特助",
+    telephone: "(07)5570112",
+    address: "高雄市三民區10號",
+    status: "uncheck"
+  },
 ];
 
 const cancelCheckForHistory = [];
@@ -179,7 +239,7 @@ export const customerService = {
             totalCheckCount: totalCheckCount,
             totalUncheckCount: totalUncheckCount,
             totalCheckForCount: totalCheckForCount,
-            totalSkipCheckForCount: totalSkipCheckForCount
+            totalSkipCheckForCount: totalSkipCheckForCount,
           });
         }, 500);
       });

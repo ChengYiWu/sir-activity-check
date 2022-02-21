@@ -6,7 +6,8 @@ import modalTypes from "./index";
 const MODAL_TYPES = {
   SUCCESS: modalTypes.SUCCESS,
   ERROR: modalTypes.ERROR,
-  CONFIRM: modalTypes.CONFIRM
+  CONFIRM: modalTypes.CONFIRM,
+  INFO: modalTypes.INFO,
 };
 
 const ModalContainer = () => {
