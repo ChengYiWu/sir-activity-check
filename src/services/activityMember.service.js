@@ -212,7 +212,7 @@ const mappingCustomer = customer => {
   };
 };
 
-export const customerService = {
+export const activityMemberService = {
   statistics: async () => {
     try {
       const totalCheckCount = customers.reduce(

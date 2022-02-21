@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { debounce, groupBy } from "lodash";
-import { customerService } from "../services";
+import { activityMemberService } from "../services";
 import { modalActions, maskActions } from "../actions";
 import { useDispatch } from "react-redux";
 import { useMutation } from "react-query";
@@ -98,7 +98,7 @@ const Home = () => {
     mutate: getStatistics,
     isLoading: getStatisticsLoading,
     data: statistics
-  } = useMutation(() => customerService.statistics());
+  } = useMutation(() => activityMemberService.statistics());
 
   useEffect(() => {
     getStatistics();
@@ -110,7 +110,7 @@ const Home = () => {
     data,
     isError,
     error
-  } = useMutation(keyword => customerService.search(keyword), {
+  } = useMutation(keyword => activityMemberService.search(keyword), {
     onSuccess(data) {
       setCustomers(data.customers);
     }
@@ -226,7 +226,7 @@ const Home = () => {
   };
 
   const { onOpen: onCancelCheckForOpen } = useCancelCheck({
-    service: id => customerService.cancelCheckFor(id),
+    service: id => activityMemberService.cancelCheckFor(id),
     customers: customers,
     onSuccess: response => {
       // handleKeywordChange();
@@ -259,7 +259,7 @@ const Home = () => {
   });
 
   const { onOpen: onCancelCheckOpen } = useCancelCheck({
-    service: id => customerService.cancelCheck(id),
+    service: id => activityMemberService.cancelCheck(id),
     customers: customers,
     onSuccess: response => {
       // handleKeywordChange();

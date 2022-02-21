@@ -27,7 +27,7 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Close } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
-import { customerService } from "../services";
+import { activityMemberService } from "../services";
 import { useMutation } from "react-query";
 import { debounce } from "lodash";
 import { grey } from "@mui/material/colors";
@@ -61,21 +61,21 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 const CheckForModal = ({ open, id, onClose, onSuccess }) => {
   const {
-    mutate: getCustomer,
+    mutate: getMember,
     isLoading: customerIsLoading,
     data: customerData,
     isError: customerIsError,
     error: customerError
-  } = useMutation(id => customerService.get(id));
+  } = useMutation(id => activityMemberService.get(id));
 
   const {
-    mutate: getCustomers,
-    reset: resetGetCustomers,
+    mutate: getMembers,
+    reset: resetgetMembers,
     isLoading: customersIsLoading,
     data: customersData,
     isError: customersIsError,
     error: customersError
-  } = useMutation(keyword => customerService.search(keyword));
+  } = useMutation(keyword => activityMemberService.search(keyword));
 
   const {
     mutate: check,
@@ -85,7 +85,7 @@ const CheckForModal = ({ open, id, onClose, onSuccess }) => {
     error: checkError
   } = useMutation(
     ({ id, checkForId }) => {
-      return customerService.check(id, checkForId);
+      return activityMemberService.check(id, checkForId);
     },
     {
       onSuccess(response) {
@@ -106,14 +106,14 @@ const CheckForModal = ({ open, id, onClose, onSuccess }) => {
 
   useEffect(() => {
     if (open && id) {
-      getCustomer(id);
+      getMember(id);
     }
-  }, [id, open, getCustomer]);
+  }, [id, open, getMember]);
 
   let handleKeywordChange = e => {
     const keyword = getValues("keyword");
     if (keyword?.length >= 3) {
-      getCustomers(keyword);
+      getMembers(keyword);
     }
   };
   handleKeywordChange = debounce(handleKeywordChange, 500);
@@ -145,13 +145,13 @@ const CheckForModal = ({ open, id, onClose, onSuccess }) => {
     if (open) {
       reset();
     }
-  }, [open, reset, resetGetCustomers]);
+  }, [open, reset, resetgetMembers]);
 
   useEffect(() => {
     if (checkForModal) {
-      resetGetCustomers();
+      resetgetMembers();
     }
-  }, [checkForModal, resetGetCustomers]);
+  }, [checkForModal, resetgetMembers]);
 
   return (
     <Dialog

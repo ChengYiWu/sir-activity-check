@@ -27,7 +27,7 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Close } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
-import { customerService } from "../services";
+import { activityMemberService } from "../services";
 import { useMutation } from "react-query";
 import { debounce } from "lodash";
 import { grey } from "@mui/material/colors";
@@ -66,7 +66,7 @@ const CheckModal = ({ open, id, onClose, onSuccess }) => {
     data: customerData,
     isError: customerIsError,
     error: customerError
-  } = useMutation(id => customerService.get(id));
+  } = useMutation(id => activityMemberService.get(id));
 
   const {
     mutate: getCustomers,
@@ -75,7 +75,7 @@ const CheckModal = ({ open, id, onClose, onSuccess }) => {
     data: customersData,
     isError: customersIsError,
     error: customersError
-  } = useMutation(keyword => customerService.search(keyword));
+  } = useMutation(keyword => activityMemberService.search(keyword));
 
   const {
     mutate: check,
@@ -85,7 +85,7 @@ const CheckModal = ({ open, id, onClose, onSuccess }) => {
     error: checkError
   } = useMutation(
     ({ id, checkForId }) => {
-      return customerService.check(id, checkForId);
+      return activityMemberService.check(id, checkForId);
     },
     {
       onSuccess(response) {
