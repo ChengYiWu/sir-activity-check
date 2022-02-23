@@ -165,7 +165,7 @@ const customers = [
     telephone: "(07)5570112",
     address: "高雄市三民區10號",
     status: "uncheck"
-  },
+  }
 ];
 
 const cancelCheckForHistory = [];
@@ -215,34 +215,38 @@ const mappingCustomer = customer => {
 export const activityMemberService = {
   statistics: async () => {
     try {
-      const totalCheckCount = customers.reduce(
-        (acc, customer) => (acc += customer.status === "checked" ? 1 : 0),
-        0
-      );
+      const { data } = await ajax.get("/activity-members/statistic", { isWithToken: true });
 
-      const totalUncheckCount = customers.reduce(
-        (acc, customer) => (acc += customer.status === "uncheck" ? 1 : 0),
-        0
-      );
+      return data;
 
-      const totalCheckForCount = customers.reduce(
-        (acc, customer) => (acc += customer.checkFor ? 1 : 0),
-        0
-      );
+      // const totalCheckCount = customers.reduce(
+      //   (acc, customer) => (acc += customer.status === "checked" ? 1 : 0),
+      //   0
+      // );
 
-      const totalSkipCheckForCount = cancelCheckForHistory.length;
+      // const totalUncheckCount = customers.reduce(
+      //   (acc, customer) => (acc += customer.status === "uncheck" ? 1 : 0),
+      //   0
+      // );
 
-      // console.log(mappedCustomers);
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve({
-            totalCheckCount: totalCheckCount,
-            totalUncheckCount: totalUncheckCount,
-            totalCheckForCount: totalCheckForCount,
-            totalSkipCheckForCount: totalSkipCheckForCount,
-          });
-        }, 500);
-      });
+      // const totalCheckForCount = customers.reduce(
+      //   (acc, customer) => (acc += customer.checkFor ? 1 : 0),
+      //   0
+      // );
+
+      // const totalSkipCheckForCount = cancelCheckForHistory.length;
+
+      // // console.log(mappedCustomers);
+      // return new Promise((resolve, reject) => {
+      //   setTimeout(() => {
+      //     resolve({
+      //       totalCheckCount: totalCheckCount,
+      //       totalUncheckCount: totalUncheckCount,
+      //       totalCheckForCount: totalCheckForCount,
+      //       totalSkipCheckForCount: totalSkipCheckForCount,
+      //     });
+      //   }, 500);
+      // });
     } catch (error) {
       return Promise.reject({ ...error, message: error.serverMessage });
     }
@@ -252,218 +256,96 @@ export const activityMemberService = {
    *
    * @param {string} keyword - The keyword of search.
    */
-  search: async keyword => {
+  search: async ({ field, keyword, from_member }) => {
     try {
-      const mappedCustomers = customers
-        .filter(customer => customer.number.includes(keyword))
-        .map(customer => {
-          return mappingCustomer(customer);
-          // let checkBy = {};
-          // if (customer.checkBy) {
-          //   const checkByCustomer = customers.find(c => c.id === customer.checkBy);
-          //   checkBy = {
-          //     checkBy: checkByCustomer.id,
-          //     checkByNumber: checkByCustomer.number,
-          //     checkByCompany: checkByCustomer.company,
-          //     checkByName: checkByCustomer.name,
-          //     checkByTelephone: checkByCustomer.telephone
-          //   };
-          // }
-
-          // let checkFor = {};
-          // if (customer.checkFor) {
-          //   const checkForCustomer = customers.find(c => c.id === customer.checkFor);
-          //   checkFor = {
-          //     checkFor: checkForCustomer.id,
-          //     checkForNumber: checkForCustomer.number,
-          //     checkForCompany: checkForCustomer.company,
-          //     checkForName: checkForCustomer.name,
-          //     checkForTelephone: checkForCustomer.telephone
-          //   };
-          // }
-
-          // return {
-          //   ...customer,
-          //   ...checkBy,
-          //   ...checkFor
-          // };
-        });
-
-      const totalCheckCount = customers.reduce(
-        (acc, customer) => (acc += customer.status === "checked" ? 1 : 0),
-        0
-      );
-
-      const totalUncheckCount = customers.reduce(
-        (acc, customer) => (acc += customer.status === "uncheck" ? 1 : 0),
-        0
-      );
-
-      const totalCheckForCount = customers.reduce(
-        (acc, customer) => (acc += customer.checkFor ? 1 : 0),
-        0
-      );
-
-      const totalSkipCheckForCount = cancelCheckForHistory.length;
-
-      // console.log(mappedCustomers);
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve({
-            totalCheckCount: totalCheckCount,
-            totalUncheckCount: totalUncheckCount,
-            totalCheckForCount: totalCheckForCount,
-            totalSkipCheckForCount: totalSkipCheckForCount,
-            customers: mappedCustomers
-          });
-        }, 500);
+      const { data } = await ajax.get("/activity-members", {
+        params: {
+          field,
+          keyword,
+          from_member
+        },
+        isWithToken: true
       });
 
-      // const response = await ajax.post("customers", {
-      //   keyword
-      // });
-
-      // return response.data;
+      return data;
     } catch (error) {
       return Promise.reject({ ...error, message: error.serverMessage });
     }
   },
   get: async id => {
     try {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve(customers.find(customer => customer.id === id));
-        }, 500);
+      const { data } = await ajax.get(`/activity-members/${id}`, {
+        isWithToken: true
       });
-      // return new Promise((resolve, reject) => {
-      //   setTimeout(() => {
-      //     reject({ message: "讀取失敗" });
-      //   }, 500);
-      // });
 
-      // const response = await ajax.post("customers", {
-      //   keyword
-      // });
-
-      // return response.data;
+      return data;
     } catch (error) {
       return Promise.reject({ ...error, message: error.serverMessage });
     }
   },
-  check: async (id, checkForId) => {
+  check: async (id, delegateForId) => {
     try {
-      const customer = customers.find(customer => customer.id === id);
-      customer.status = "checked";
-      customer.checkFor = checkForId || null;
-
-      let checkByCustomer = null;
-      let ticket = null;
-      if (checkForId) {
-        ticket = ++ticketNumber;
-        checkByCustomer = customers.find(customer => customer.id === checkForId);
-        checkByCustomer.checkBy = id;
-        checkByCustomer.checkByTicketNumber = ticket;
-        customer.checkForTicketNumber = ticket;
-      }
-
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve({
-            ticketNumber: ticket,
-            customer,
-            checkByCustomer,
-            message: "報到成功",
-            newCustomers: mappingCustomersRelation([customer, checkByCustomer])
-          });
-        }, 500);
-      });
-
-      // return new Promise((resolve, reject) => {
-      //   setTimeout(() => {
-      //     reject({ message: "讀取失敗" });
-      //   }, 500);
-      // });
-
-      // const response = await ajax.post("customers", {
-      //   keyword
-      // });
-
-      // return response.data;
+      const { message, data } = await ajax.put(
+        `/activity-members/${id}/check`,
+        {
+          delegate_for: delegateForId
+        },
+        { isWithToken: true }
+      );
+      return {
+        message,
+        delegate_seq_number: data.delegate_seq_number,
+      };
     } catch (error) {
       return Promise.reject({ ...error, message: error.serverMessage });
     }
   },
   cancelCheck: async id => {
     try {
-      const customer = customers.find(customer => customer.id === id);
-      customer.status = "uncheck";
-      customer.checkForTicketNumber = null;
+      const { message, data } = await ajax.put(
+        `/activity-members/${id}/uncheck`,
+        { cancel_delegate_for: true },
+        { isWithToken: true }
+      );
 
-      let checkForCustomer = null;
-      if (customer.checkFor) {
-        checkForCustomer = customers.find(c => c.id === customer.checkFor);
-        checkForCustomer.checkBy = null;
-        checkForCustomer.status = "uncheck";
+      return {
+        message,
+        currentMember: data.currentMember,
+        newMembers: data.newMembers
+      };
+    } catch (error) {
+      return Promise.reject({ ...error, message: error.serverMessage });
+    }
+  },
+  delegateFor: async (id, delegateForId) => {
+    try {
+      const { message, data } = await ajax.put(
+        `/activity-members/${id}/delegate-for/${delegateForId}`,
+        {},
+        { isWithToken: true }
+      );
 
-        cancelCheckForHistory.push(checkForCustomer.checkByTicketNumber);
-        checkForCustomer.checkByTicketNumber = null;
-      }
-
-      customer.checkFor = null;
-
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve({
-            customer,
-            checkForCustomer,
-            message: "取消出席成功",
-            newCustomers: mappingCustomersRelation([customer, checkForCustomer])
-          });
-        }, 500);
-      });
-
-      // return new Promise((resolve, reject) => {
-      //   setTimeout(() => {
-      //     reject({ message: "讀取失敗" });
-      //   }, 500);
-      // });
-
-      // const response = await ajax.post("customers", {
-      //   keyword
-      // });
-
-      // return response.data;
+      return {
+        message,
+        newMembers: data.newMembers
+      };
     } catch (error) {
       return Promise.reject({ ...error, message: error.serverMessage });
     }
   },
   cancelCheckFor: async id => {
     try {
-      const customer = customers.find(customer => customer.id === id);
+      const { message, data } = await ajax.put(
+        `/activity-members/${id}/cancel-delegate-for`,
+        {},
+        { isWithToken: true }
+      );
 
-      let checkForCustomer = null;
-      if (customer.checkFor) {
-        checkForCustomer = customers.find(c => c.id === customer.checkFor);
-        checkForCustomer.checkBy = null;
-        checkForCustomer.status = "uncheck";
+      return {
+        message,
+        newMembers: data.newMembers
+      };
 
-        cancelCheckForHistory.push(checkForCustomer.checkByTicketNumber);
-        checkForCustomer.checkByTicketNumber = null;
-      }
-
-      customer.checkForTicketNumber = null;
-      customer.checkFor = null;
-
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve({
-            customer,
-            checkForCustomer,
-            message: "取消代理出席成功",
-            newCustomers: mappingCustomersRelation([customer, checkForCustomer])
-          });
-        }, 500);
-      });
     } catch (error) {
       return Promise.reject({ ...error, message: error.serverMessage });
     }

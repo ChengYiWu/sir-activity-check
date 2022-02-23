@@ -31,7 +31,7 @@ import { activityMemberService } from "../services";
 import { useMutation } from "react-query";
 import { debounce } from "lodash";
 import { grey } from "@mui/material/colors";
-import CustomerCardHeader from "./CustomerCardHeader";
+import MemberCardHeader from "./MemberCardHeader";
 
 const Label = ({ children }) => {
   return (
@@ -62,30 +62,30 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const CheckForModal = ({ open, id, onClose, onSuccess }) => {
   const {
     mutate: getMember,
-    isLoading: customerIsLoading,
-    data: customerData,
-    isError: customerIsError,
-    error: customerError
+    isLoading: memberIsLoading,
+    data: memberData,
+    isError: memberIsError,
+    error: memberError
   } = useMutation(id => activityMemberService.get(id));
 
   const {
     mutate: getMembers,
     reset: resetgetMembers,
-    isLoading: customersIsLoading,
-    data: customersData,
-    isError: customersIsError,
-    error: customersError
-  } = useMutation(keyword => activityMemberService.search(keyword));
+    isLoading: membersIsLoading,
+    data: membersData,
+    isError: membersIsError,
+    error: membersError
+  } = useMutation(param => activityMemberService.search(param));
 
   const {
-    mutate: check,
-    isLoading: checkIsLoading,
-    data: checkData,
-    isError: checkIsError,
-    error: checkError
+    mutate: delegateFor,
+    isLoading: delegateForIsLoading,
+    data: delegateForData,
+    isError: delegateForIsError,
+    error: delegateForError
   } = useMutation(
-    ({ id, checkForId }) => {
-      return activityMemberService.check(id, checkForId);
+    ({ id, delegateForId }) => {
+      return activityMemberService.delegateFor(id, delegateForId);
     },
     {
       onSuccess(response) {
@@ -113,16 +113,15 @@ const CheckForModal = ({ open, id, onClose, onSuccess }) => {
   let handleKeywordChange = e => {
     const keyword = getValues("keyword");
     if (keyword?.length >= 3) {
-      getMembers(keyword);
+      getMembers({ field: "license", keyword, from_member: id });
     }
   };
   handleKeywordChange = debounce(handleKeywordChange, 500);
 
   const handleCheck = data => {
-    console.log(data);
-    check({
+    delegateFor({
       id,
-      checkForId: data.checkFor ? data.checkForCustomer.id : null
+      delegateForId: data.checkFor ? data.checkForCustomer.id : null
     });
   };
 
@@ -172,13 +171,13 @@ const CheckForModal = ({ open, id, onClose, onSuccess }) => {
         </Toolbar>
       </AppBar>
       <DialogContent>
-        {customerIsError && (
+        {memberIsError && (
           <Alert variant="outlined" severity="error">
             <AlertTitle>Error</AlertTitle>
-            {customerError.message}
+            {memberError.message}
           </Alert>
         )}
-        {customerIsLoading && (
+        {memberIsLoading && (
           <Box sx={{ mt: 3 }}>
             <Skeleton animation="wave" />
             <Skeleton animation="wave" />
@@ -187,29 +186,29 @@ const CheckForModal = ({ open, id, onClose, onSuccess }) => {
             <Skeleton animation="wave" />
           </Box>
         )}
-        {!customerIsLoading && customerData && (
+        {!memberIsLoading && memberData && (
           <Box>
             <Grid container spacing={2} sx={{ mb: 1 }}>
               <Grid item xs={2} md={1}>
                 <Label>證號</Label>
               </Grid>
               <Grid item xs={10} md={5}>
-                <Text>{customerData.number}</Text>
+                <Text>{memberData.license_number}</Text>
               </Grid>
               <Grid item xs={2} md={1}>
                 <Label>公司</Label>
               </Grid>
               <Grid item xs={10} md={5}>
-                <Text>{customerData.company}</Text>
+                <Text>{memberData.company_name}</Text>
               </Grid>
               <Grid item xs={2} md={1}>
                 <Label>姓名</Label>
               </Grid>
               <Grid item xs={10} md={5}>
                 <Text>
-                  {customerData.name}
+                  {memberData.name}
                   <Typography variant="subtitle1" component="span">
-                    （{customerData.title}）
+                    （{memberData.title}）
                   </Typography>
                 </Text>
               </Grid>
@@ -217,14 +216,14 @@ const CheckForModal = ({ open, id, onClose, onSuccess }) => {
                 <Label>電話</Label>
               </Grid>
               <Grid item xs={10} md={5}>
-                <Text>{customerData.telephone}</Text>
+                <Text>{memberData.telephone}</Text>
               </Grid>
               <Grid item xs={2} md={1}>
                 <Label>狀態</Label>
               </Grid>
               <Grid item xs={10} md={5}>
-                {customerData.status === "checked" && <Text>完成報到</Text>}
-                {customerData.status === "uncheck" && <Text>尚未報到</Text>}
+                {memberData.checkin_status === "valid" && <Text>完成報到</Text>}
+                {memberData.checkin_status === "invalid" && <Text>尚未報到</Text>}
               </Grid>
             </Grid>
             <FormControlLabel
@@ -251,7 +250,8 @@ const CheckForModal = ({ open, id, onClose, onSuccess }) => {
             >
               {checkForCustomer ? (
                 <span>
-                  {checkForCustomer.number}-{checkForCustomer.company} / {checkForCustomer.name}
+                  {checkForCustomer.license_number}-{checkForCustomer.company_name} /{" "}
+                  {checkForCustomer.name}
                 </span>
               ) : (
                 <span>請選擇代理出席人員</span>
@@ -266,12 +266,12 @@ const CheckForModal = ({ open, id, onClose, onSuccess }) => {
           fullWidth
           variant="contained"
           disabled={
-            !customerData ||
-            customerIsLoading ||
-            checkIsLoading ||
+            !memberData ||
+            memberIsLoading ||
+            delegateForIsLoading ||
             (isCheckFor && !checkForCustomer)
           }
-          loading={customerIsLoading || checkIsLoading}
+          loading={memberIsLoading || delegateForIsLoading}
           onClick={handleSubmit(handleCheck)}
         >
           {isCheckFor && !checkForCustomer ? "請選擇代理出席人員" : "確定委託出席"}
@@ -299,7 +299,7 @@ const CheckForModal = ({ open, id, onClose, onSuccess }) => {
             sx={{ mt: 1 }}
           />
           <Divider sx={{ my: 1 }}>搜尋結果</Divider>
-          {customersIsLoading && (
+          {membersIsLoading && (
             <Box sx={{ mt: 3 }}>
               <Skeleton animation="wave" />
               <Skeleton animation="wave" />
@@ -310,7 +310,7 @@ const CheckForModal = ({ open, id, onClose, onSuccess }) => {
               <Skeleton animation="wave" />
             </Box>
           )}
-          {!customersIsLoading && customersData?.customers.length <= 0 && (
+          {!membersIsLoading && membersData?.items.length <= 0 && (
             <Box
               sx={{ display: "block", textAlign: "center", color: grey[600], fontStyle: "italic" }}
             >
@@ -318,26 +318,31 @@ const CheckForModal = ({ open, id, onClose, onSuccess }) => {
             </Box>
           )}
           <List sx={{ "& ul": { padding: 0 } }} subheader={<li />}>
-            {customersData?.customers.map(customer => {
-              const { number, company, status, id: customerId, name, checkBy } = customer;
-              const isDisabled = status === "checked" || !!checkBy || customerId === id;
+            {membersData?.items.map(member => {
+              const {
+                license_number,
+                company_name,
+                checkin_status,
+                id: memberId,
+                name,
+                delegated_by_member_id
+              } = member;
+              const isDisabled =
+                checkin_status === "valid" || !!delegated_by_member_id || memberId === id;
               return (
-                <li key={customerId}>
+                <li key={memberId}>
                   <ul>
                     <ListItem
-                      key={`${customerId}`}
+                      key={`${memberId}`}
                       button
                       sx={{ p: 0, mt: 1 }}
                       disabled={isDisabled}
-                      onClick={isDisabled ? null : e => handleSelectCheckFor(customer)}
+                      onClick={isDisabled ? null : e => handleSelectCheckFor(member)}
                     >
-                      {/* <Box sx={{ color: isDisabled ? grey[600] : null }}>
-                        {number}-{company} / {name}
-                      </Box> */}
                       <Card sx={{ width: "100%" }} variant="outlined">
-                        <CustomerCardHeader customer={customer} />
+                        <MemberCardHeader member={member} />
                         <CardContent sx={{ "&:last-child": { pt: 0, pb: 1 } }}>
-                          {number}-{company}
+                          {license_number}-{company_name}
                         </CardContent>
                       </Card>
                     </ListItem>

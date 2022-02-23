@@ -1,10 +1,10 @@
 import React from "react";
 import { CardHeader, Typography, Box } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import CustomerListItemStatus from "./CustomerListItemStatus";
+import MemberListItemStatus from "./MemberListItemStatus";
 
-const CustomerCardHeader = ({ customer, ...others }) => {
-  const { name, title, telephone } = customer;
+const MemberCardHeader = ({ member, ...others }) => {
+  const { name, title, telephone } = member;
   return (
     <CardHeader
       {...others}
@@ -23,9 +23,9 @@ const CustomerCardHeader = ({ customer, ...others }) => {
           </Typography>
         </Box>
       }
-      action={<CustomerListItemStatus customer={customer} />}
+      action={<MemberListItemStatus member={member} />}
     />
   );
 };
 
-export default CustomerCardHeader;
+export default MemberCardHeader;
