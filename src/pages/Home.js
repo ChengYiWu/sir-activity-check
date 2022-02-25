@@ -10,6 +10,7 @@ import { grey, red } from "@mui/material/colors";
 import HomeForm from "../components/HomeForm";
 import HomeSearchResult from "../components/HomeSearchResult";
 import UncheckConfirmModal from "../components/UncheckConfirmModal";
+import { queryConditionCache } from "../utils";
 
 const useCancelCheck = ({
   service,
@@ -137,14 +138,11 @@ const Home = ({ getStatistics }) => {
 
   useEffect(() => {
     // 重整時可載入上一次查詢結果
-    if (localStorage.getItem("query-member-condition")) {
-      let condition = localStorage.getItem("query-member-condition");
-      if (condition) {
-        condition = JSON.parse(condition);
-        Object.keys(condition).forEach(key => form.setValue(key, condition[key]));
-        setSearchCondition(condition);
-        search(condition);
-      }
+    let condition = queryConditionCache.get();
+    if (condition) {
+      Object.keys(condition).forEach(key => form.setValue(key, condition[key]));
+      setSearchCondition(condition);
+      search(condition);
     }
   }, []);
 
@@ -153,11 +151,11 @@ const Home = ({ getStatistics }) => {
     search(data);
     setSearchCondition(data);
     // 暫存上次查詢結果
-    localStorage.setItem("query-member-condition", JSON.stringify(data));
+    queryConditionCache.set(data);
   };
 
   const handleClearConditionForm = () => {
-    localStorage.removeItem("query-member-condition");
+    queryConditionCache.clear();
     setMembers([]);
     setSearchCondition(null);
   };

@@ -1,5 +1,5 @@
 import { authConstants } from "../constants";
-import { secureStroge, storgeKeys } from "../utils";
+import { secureStroge, storgeKeys, queryConditionCache } from "../utils";
 
 const initState = {
   userInfo: null,
@@ -15,6 +15,7 @@ export const auth = (state = initState, action) => {
         userPermissions: action.userInfo.permissions
       };
     case authConstants.LOGOUT_SUCCESS:
+      queryConditionCache.clear();
       secureStroge.remove(storgeKeys.userAuth);
       return {
         ...state,

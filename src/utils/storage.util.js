@@ -22,4 +22,23 @@ const secureStroge = new SecureLS({
   encryptionSecret: "i-love-hyl-activity-check"
 });
 
-export { secureStroge, storgeKeys };
+const storeQueryCondition = data => {
+  localStorage.setItem("query-member-condition", JSON.stringify(data));
+};
+
+const getQueryCondition = () => {
+  const condition = localStorage.getItem("query-member-condition");
+  return condition ? JSON.parse(condition) : null;
+};
+
+const removeQueryCondition = () => {
+  localStorage.removeItem("query-member-condition");
+};
+
+const queryConditionCache = {
+  set: storeQueryCondition,
+  get: getQueryCondition,
+  clear: removeQueryCondition
+};
+
+export { secureStroge, storgeKeys, queryConditionCache };
