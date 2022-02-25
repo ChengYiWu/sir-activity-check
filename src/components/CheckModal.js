@@ -13,25 +13,22 @@ import {
   Alert,
   AlertTitle,
   Skeleton,
-  TextField,
   FormControlLabel,
   Switch,
-  Grid,
-  DialogTitle,
-  Divider,
-  List,
-  ListItem,
-  Card,
-  CardContent
+  Grid
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Close } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { activityMemberService } from "../services";
 import { useMutation } from "react-query";
-import { debounce } from "lodash";
 import { grey } from "@mui/material/colors";
-import MemberCardHeader from "./MemberCardHeader";
+import DelegateForSelectModal from "./DelegateForSelectModal";
+
+export const CheckModalType = Object.freeze({
+  CHECKIN: "CHECKIN",
+  DELEGATE: "DELEGATE"
+});
 
 const Label = ({ children }) => {
   return (
@@ -59,23 +56,22 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CheckModal = ({ open, id, onClose, onSuccess }) => {
+const CheckModal = ({ open, id, onClose, onSuccess, type }) => {
+  const isCheckin = type === CheckModalType.CHECKIN;
+
   const {
     mutate: getMember,
     isLoading: memberIsLoading,
     data: memberData,
     isError: memberIsError,
     error: memberError
-  } = useMutation(id => activityMemberService.get(id));
-
-  const {
-    mutate: getMembers,
-    reset: resetGetMembers,
-    isLoading: membersIsLoading,
-    data: membersData,
-    isError: membersIsError,
-    error: membersError
-  } = useMutation(param => activityMemberService.search(param));
+  } = useMutation(id => activityMemberService.get(id), {
+    onSuccess() {
+      if (!isCheckin) {
+        setDelegateForSelectModal(true);
+      }
+    }
+  });
 
   const {
     mutate: checkin,
@@ -83,9 +79,21 @@ const CheckModal = ({ open, id, onClose, onSuccess }) => {
     data: checkinData,
     isError: checkinIsError,
     error: checkinError
+  } = useMutation(({ id, checkForId }) => activityMemberService.check(id, checkForId), {
+    onSuccess(response) {
+      onSuccess(response);
+    }
+  });
+
+  const {
+    mutate: delegateFor,
+    isLoading: delegateForIsLoading,
+    data: delegateForData,
+    isError: delegateForIsError,
+    error: delegateForError
   } = useMutation(
-    ({ id, checkForId }) => {
-      return activityMemberService.check(id, checkForId);
+    ({ id, delegateForId }) => {
+      return activityMemberService.delegateFor(id, delegateForId);
     },
     {
       onSuccess(response) {
@@ -94,15 +102,17 @@ const CheckModal = ({ open, id, onClose, onSuccess }) => {
     }
   );
 
-  const { handleSubmit, getValues, register, errors, control, watch, setValue, reset } = useForm({
+  const { handleSubmit, register, control, watch, setValue, reset } = useForm({
     defaultValues: {
-      checkFor: false,
+      delegateFor: false,
       keyword: null,
-      checkForCustomer: null
+      delegateForMember: null
     }
   });
 
-  const isCheckFor = watch("checkFor");
+  register("delegateForMember", null);
+  const isDelegateFor = watch("delegateFor");
+  const delegateForMember = watch("delegateForMember");
 
   useEffect(() => {
     if (open && id) {
@@ -110,266 +120,200 @@ const CheckModal = ({ open, id, onClose, onSuccess }) => {
     }
   }, [id, open, getMember]);
 
-  let handleKeywordChange = e => {
-    const keyword = getValues("keyword");
-    if (keyword?.length >= 3) {
-      getMembers({ field: "license", keyword, from_member: id });
+  const handleCheck = data => {
+    if (isCheckin) {
+      checkin({
+        id,
+        checkForId: data.delegateFor ? data.delegateForMember.id : null
+      });
+    } else {
+      delegateFor({
+        id,
+        delegateForId: data.delegateFor ? data.delegateForMember.id : null
+      });
     }
   };
-  handleKeywordChange = debounce(handleKeywordChange, 500);
 
-  const handleCheck = data => {
-    checkin({
-      id,
-      checkForId: data.checkFor ? data.checkForCustomer.id : null
-    });
+  const [delegateForSelectModal, setDelegateForSelectModal] = useState(false);
+  const handleDelegateForSelected = delegateForMember => {
+    setValue("delegateForMember", delegateForMember, { shouldValidate: true });
+    handleCloseDelegateForSelectModal();
   };
-
-  register("checkForCustomer", null);
-  const checkForCustomer = watch("checkForCustomer");
-
-  const handleSelectCheckFor = checkForCustomer => {
-    setValue("checkForCustomer", checkForCustomer, { shouldValidate: true });
-    handleCloseCheckForModal();
+  const handleCloseDelegateForSelectModal = () => {
+    setDelegateForSelectModal(false);
   };
-  const [checkForModal, setCheckForModal] = useState(false);
-  const handleCloseCheckForModal = () => {
-    setCheckForModal(false);
-  };
-  const handleCheckForClick = () => {
-    setCheckForModal(true);
+  const handleDelegateForClick = () => {
+    setDelegateForSelectModal(true);
   };
 
   useEffect(() => {
     if (open) {
-      reset();
+      reset({
+        delegateFor: isCheckin ? false : true,
+        keyword: null,
+        delegateForMember: null
+      });
     }
-  }, [open, reset, resetGetMembers]);
-
-  useEffect(() => {
-    if (checkForModal) {
-      resetGetMembers();
-    }
-  }, [checkForModal, resetGetMembers]);
+  }, [open, reset, isCheckin]);
 
   return (
-    <Dialog
-      fullScreen
-      open={open}
-      onClose={onClose}
-      TransitionComponent={Transition}
-      scroll={"paper"}
-    >
-      <AppBar sx={{ position: "relative" }}>
-        <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={onClose} aria-label="close">
-            <Close />
-          </IconButton>
-          <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-            報到操作
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <DialogContent>
-        {memberIsError && (
-          <Alert variant="outlined" severity="error">
-            <AlertTitle>Error</AlertTitle>
-            {memberError.message}
-          </Alert>
-        )}
-        {memberIsLoading && (
-          <Box sx={{ mt: 3 }}>
-            <Skeleton animation="wave" />
-            <Skeleton animation="wave" />
-            <Skeleton animation="wave" />
-            <Skeleton animation="wave" />
-            <Skeleton animation="wave" />
-          </Box>
-        )}
-        {!memberIsLoading && memberData && (
-          <Box>
-            <Grid container spacing={2} sx={{ mb: 1 }}>
-              <Grid item xs={2} md={1}>
-                <Label>證號</Label>
-              </Grid>
-              <Grid item xs={10} md={5}>
-                <Text>{memberData.license_number}</Text>
-              </Grid>
-              <Grid item xs={2} md={1}>
-                <Label>公司</Label>
-              </Grid>
-              <Grid item xs={10} md={5}>
-                <Text>{memberData.company_name}</Text>
-              </Grid>
-              <Grid item xs={2} md={1}>
-                <Label>姓名</Label>
-              </Grid>
-              <Grid item xs={10} md={5}>
-                <Text>
-                  {memberData.name}
-                  <Typography variant="subtitle1" component="span">
-                    （{memberData.title}）
-                  </Typography>
-                </Text>
-              </Grid>
-              <Grid item xs={2} md={1}>
-                <Label>電話</Label>
-              </Grid>
-              <Grid item xs={10} md={5}>
-                <Text>{memberData.telephone}</Text>
-              </Grid>
-              <Grid item xs={2} md={1}>
-                <Label>狀態</Label>
-              </Grid>
-              <Grid item xs={10} md={5}>
-                {memberData.checkin_status === "valid" && <Text>完成報到</Text>}
-                {memberData.checkin_status === "invalid" && <Text>尚未報到</Text>}
-              </Grid>
-              {memberData.delegate_for_member_id && (
-                <>
-                  <Grid item xs={2} md={1}>
-                    <Label>代理他人</Label>
-                  </Grid>
-                  <Grid item xs={10} md={5}>
-                    {memberData.delegate_for_name}
-                  </Grid>
-                </>
-              )}
-            </Grid>
-            {!memberData.delegate_for_member_id && (
-              <FormControlLabel
-                sx={{ mb: 2, ml: 0 }}
-                control={
-                  <Controller
-                    name="checkFor"
-                    control={control}
-                    render={props => (
-                      <Switch
-                        onChange={e => props.onChange(e.target.checked)}
-                        checked={props.value}
-                        color="primary"
-                      />
-                    )}
-                  />
-                }
-                label="代理他人出席"
-                labelPlacement="end"
-              />
-            )}
-            {isCheckFor && (
-              <Button
-                fullWidth
-                variant="outlined"
-                color={checkForCustomer ? "primary" : "warning"}
-                onClick={handleCheckForClick}
-                sx={{
-                  borderStyle: checkForCustomer ? "solid" : "dashed"
-                }}
-              >
-                {checkForCustomer ? (
-                  <span>
-                    {checkForCustomer.license_number}-{checkForCustomer.company_name} /{" "}
-                    {checkForCustomer.name}
-                  </span>
-                ) : (
-                  <span>請選擇代理出席人員</span>
-                )}
-              </Button>
-            )}
-          </Box>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <LoadingButton
-          size="large"
-          fullWidth
-          variant="contained"
-          disabled={
-            !memberData || memberIsLoading || checkinIsLoading || (isCheckFor && !checkForCustomer)
-          }
-          loading={memberIsLoading || checkinIsLoading}
-          onClick={handleSubmit(handleCheck)}
-        >
-          {isCheckFor && !checkForCustomer ? "請選擇代理出席人員" : "確定報到"}
-        </LoadingButton>
-      </DialogActions>
-      <Dialog onClose={handleCloseCheckForModal} open={checkForModal} fullWidth>
-        <DialogTitle>選擇代理出席人員</DialogTitle>
-        <DialogContent sx={{ px: 2 }}>
-          <TextField
-            fullWidth
-            focused
-            inputRef={register}
-            name="keyword"
-            label="證號"
-            inputProps={{ type: "number" }}
-            error={!!errors.keyword}
-            helperText={errors.keyword?.message || "請至少輸入 3 碼數字"}
-            size="small"
-            onKeyPress={e => {
-              if (isNaN(Number(e.key))) {
-                e.preventDefault();
-              }
-            }}
-            onChange={handleKeywordChange}
-            sx={{ mt: 1 }}
-          />
-          <Divider sx={{ my: 1 }}>搜尋結果</Divider>
-          {membersIsLoading && (
+    <>
+      <Dialog
+        fullScreen
+        open={open}
+        onClose={onClose}
+        TransitionComponent={Transition}
+        scroll={"paper"}
+      >
+        <AppBar sx={{ position: "relative" }}>
+          <Toolbar>
+            <IconButton edge="start" color="inherit" onClick={onClose} aria-label="close">
+              <Close />
+            </IconButton>
+            <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+              {isCheckin ? "報到操作" : "委託出席操作"}
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <DialogContent>
+          {memberIsError && (
+            <Alert variant="outlined" severity="error">
+              <AlertTitle>Error</AlertTitle>
+              {memberError.message}
+            </Alert>
+          )}
+          {memberIsLoading && (
             <Box sx={{ mt: 3 }}>
               <Skeleton animation="wave" />
               <Skeleton animation="wave" />
               <Skeleton animation="wave" />
               <Skeleton animation="wave" />
               <Skeleton animation="wave" />
-              <Skeleton animation="wave" />
-              <Skeleton animation="wave" />
             </Box>
           )}
-          {!membersIsLoading && membersData?.items.length <= 0 && (
-            <Box
-              sx={{ display: "block", textAlign: "center", color: grey[600], fontStyle: "italic" }}
-            >
-              無任何資料
+          {!memberIsLoading && memberData && (
+            <Box>
+              <Grid container spacing={2} sx={{ mb: 1 }}>
+                <Grid item xs={3} md={1}>
+                  <Label>證號</Label>
+                </Grid>
+                <Grid item xs={9} md={5}>
+                  <Text>{memberData.license_number}</Text>
+                </Grid>
+                <Grid item xs={3} md={1}>
+                  <Label>公司</Label>
+                </Grid>
+                <Grid item xs={9} md={5}>
+                  <Text>{memberData.company_name}</Text>
+                </Grid>
+                <Grid item xs={3} md={1}>
+                  <Label>姓名</Label>
+                </Grid>
+                <Grid item xs={9} md={5}>
+                  <Text>
+                    {memberData.name}
+                    <Typography variant="subtitle1" component="span">
+                      （{memberData.title}）
+                    </Typography>
+                  </Text>
+                </Grid>
+                <Grid item xs={3} md={1}>
+                  <Label>電話</Label>
+                </Grid>
+                <Grid item xs={9} md={5}>
+                  <Text>{memberData.telephone}</Text>
+                </Grid>
+                <Grid item xs={3} md={1}>
+                  <Label>狀態</Label>
+                </Grid>
+                <Grid item xs={9} md={5}>
+                  {memberData.checkin_status === "valid" && <Text>完成報到</Text>}
+                  {memberData.checkin_status === "invalid" && <Text>尚未報到</Text>}
+                </Grid>
+                {memberData.delegate_for_member_id && (
+                  <>
+                    <Grid item xs={3} md={1}>
+                      <Label>代理他人</Label>
+                    </Grid>
+                    <Grid item xs={9} md={5}>
+                      {memberData.delegate_for_name}
+                    </Grid>
+                  </>
+                )}
+              </Grid>
+              {!memberData.delegate_for_member_id && (
+                <FormControlLabel
+                  sx={{ mb: 2, ml: 0 }}
+                  control={
+                    <Controller
+                      name="delegateFor"
+                      control={control}
+                      render={props => (
+                        <Switch
+                          onChange={e => props.onChange(e.target.checked)}
+                          checked={props.value}
+                          color="primary"
+                          disabled={!isCheckin}
+                        />
+                      )}
+                    />
+                  }
+                  label="代理他人出席"
+                  labelPlacement="end"
+                />
+              )}
+              {(isDelegateFor || !isCheckin) && (
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  color={delegateForMember ? "primary" : "warning"}
+                  onClick={handleDelegateForClick}
+                  sx={{
+                    borderStyle: delegateForMember ? "solid" : "dashed"
+                  }}
+                >
+                  {delegateForMember ? (
+                    <span>
+                      {delegateForMember.license_number}-{delegateForMember.company_name} /{" "}
+                      {delegateForMember.name}
+                    </span>
+                  ) : (
+                    <span>請選擇代理出席人員</span>
+                  )}
+                </Button>
+              )}
             </Box>
           )}
-          <List sx={{ "& ul": { padding: 0 } }} subheader={<li />}>
-            {membersData?.items.map(member => {
-              const {
-                name,
-                license_number,
-                company_name,
-                checkin_status,
-                id: memberId,
-                delegated_by_member_id
-              } = member;
-              const isDisabled =
-                checkin_status === "valid" || !!delegated_by_member_id || memberId === id;
-              return (
-                <li key={memberId}>
-                  <ul>
-                    <ListItem
-                      key={`${memberId}`}
-                      button
-                      sx={{ p: 0, mt: 1 }}
-                      disabled={isDisabled}
-                      onClick={isDisabled ? null : e => handleSelectCheckFor(member)}
-                    >
-                      <Card sx={{ width: "100%" }} variant="outlined">
-                        <MemberCardHeader member={member} />
-                        <CardContent sx={{ "&:last-child": { pt: 0, pb: 1 } }}>
-                          {license_number}-{company_name}
-                        </CardContent>
-                      </Card>
-                    </ListItem>
-                  </ul>
-                </li>
-              );
-            })}
-          </List>
         </DialogContent>
+        <DialogActions>
+          <LoadingButton
+            size="large"
+            fullWidth
+            variant="contained"
+            disabled={
+              !memberData ||
+              memberIsLoading ||
+              checkinIsLoading ||
+              (isDelegateFor && !delegateForMember)
+            }
+            loading={memberIsLoading || checkinIsLoading || delegateForIsLoading}
+            onClick={handleSubmit(handleCheck)}
+          >
+            {isDelegateFor && !delegateForMember
+              ? "請選擇代理出席人員"
+              : isCheckin
+              ? "確定報到"
+              : "確定委託出席"}
+          </LoadingButton>
+        </DialogActions>
       </Dialog>
-    </Dialog>
+      <DelegateForSelectModal
+        open={delegateForSelectModal}
+        fromMemberId={id}
+        onClose={handleCloseDelegateForSelectModal}
+        onDelegateForSelected={handleDelegateForSelected}
+      />
+    </>
   );
 };
 

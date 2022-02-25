@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Redirect, Route } from "react-router-dom";
 
-const ProtecedRoute = ({ component: Component, ...rest }) => {
+const ProtecedRoute = ({ component: Component, componentProps, ...rest }) => {
   const { userInfo } = useSelector(state => state.auth);
   return (
     <Route
@@ -10,7 +10,7 @@ const ProtecedRoute = ({ component: Component, ...rest }) => {
       render={props => {
         const { location } = props;
         if (userInfo) {
-          return <Component {...props} />;
+          return <Component {...componentProps} {...props} />;
         }
 
         return (

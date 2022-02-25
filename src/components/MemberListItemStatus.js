@@ -1,23 +1,29 @@
 import React from "react";
-import { Chip } from "@mui/material";
-import { CheckCircle, Cancel } from "@mui/icons-material";
+import { Chip, Stack } from "@mui/material";
+import { CheckCircle, Cancel, DoneAll } from "@mui/icons-material";
 import { deepOrange } from "@mui/material/colors";
 
 const MemberListItemStatus = ({ member }) => {
-  const { checkin_status, delegated_by_member_id } = member;
+  const { checkin_status, delegated_by_member_id, delegate_for_member_id } = member;
 
-  if (checkin_status === "valid") {
-    return <Chip icon={<CheckCircle />} label="本人報到" color={"success"} size="small" />;
-  }
-
-  if (delegated_by_member_id) {
+  if (checkin_status === "valid" || delegated_by_member_id || delegate_for_member_id) {
     return (
-      <Chip
-        icon={<CheckCircle />}
-        label="委託出席"
-        sx={{ bgcolor: deepOrange[600], color: "white", "& .MuiChip-icon": { color: "white" } }}
-        size="small"
-      />
+      <Stack spacing="3px">
+        {checkin_status === "valid" && (
+          <Chip icon={<CheckCircle />} label="本人報到" color={"success"} size="small" />
+        )}
+        {delegate_for_member_id && (
+          <Chip icon={<DoneAll />} label="代理出席" color={"success"} size="small" />
+        )}
+        {delegated_by_member_id && (
+          <Chip
+            icon={<CheckCircle />}
+            label="委託出席"
+            sx={{ bgcolor: deepOrange[600], color: "white", "& .MuiChip-icon": { color: "white" } }}
+            size="small"
+          />
+        )}
+      </Stack>
     );
   }
 

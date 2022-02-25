@@ -34,12 +34,12 @@ const ErrorModal = props => {
 
   return (
     <Dialog open={open} fullWidth maxWidth={"xs"} {...others}>
-      <DialogTitle>
-        <Box display="flex">
-          <Box display="flex">
-            <ErrorOutline />
+      <DialogTitle sx={{ px: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Box sx={{ display: "flex" }}>
+            <ErrorOutline sx={{ color: "error.main" }}/>
           </Box>
-          <span>{title}</span>
+          <Box component="span" sx={{ fontWeight: 600, ml: 1 }}>{title}</Box>
         </Box>
       </DialogTitle>
       {content && (
