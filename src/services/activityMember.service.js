@@ -60,7 +60,7 @@ export const activityMemberService = {
       return Promise.reject({ ...error, message: error.serverMessage });
     }
   },
-  cancelCheck: async (id, cancelDelegateFor) => {
+  uncheck: async (id, cancelDelegateFor) => {
     try {
       const { message, data } = await ajax.put(
         `/activity-members/${id}/uncheck`,

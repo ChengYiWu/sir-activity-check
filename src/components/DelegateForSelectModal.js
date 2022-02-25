@@ -9,7 +9,9 @@ import {
   List,
   ListItem,
   Card,
-  CardContent
+  CardContent,
+  Alert,
+  AlertTitle
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { activityMemberService } from "../services";
@@ -47,11 +49,21 @@ const DelegateForSelectModal = ({ open, onClose, onDelegateForSelected, fromMemb
     getMembers(data);
   };
 
+  const handleClear = () => {
+    resetGetMembers();
+  }
+
   return (
     <Dialog onClose={onClose} open={open} fullWidth>
       <DialogTitle>選擇代理出席人員</DialogTitle>
       <DialogContent sx={{ px: 2, pt: "8px !important" }}>
-        <HomeForm form={form} onSearch={handleSearch} />
+        {membersIsError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            <AlertTitle>錯誤</AlertTitle>
+            {membersError.message}
+          </Alert>
+        )}
+        <HomeForm form={form} onSearch={handleSearch} onClear={handleClear}/>
         <Divider sx={{ my: 1 }}>搜尋結果</Divider>
         {membersIsLoading && (
           <Box sx={{ mt: 3 }}>

@@ -22,8 +22,9 @@ import { Close } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { activityMemberService } from "../services";
 import { useMutation } from "react-query";
-import { grey } from "@mui/material/colors";
+import { green, grey } from "@mui/material/colors";
 import DelegateForSelectModal from "./DelegateForSelectModal";
+import { MemberDelegateForChip } from "./MemberDelegateChip";
 
 export const CheckModalType = Object.freeze({
   CHECKIN: "CHECKIN",
@@ -48,8 +49,12 @@ const Label = ({ children }) => {
   );
 };
 
-const Text = ({ children }) => {
-  return <Typography variant="h6">{children}</Typography>;
+const Text = ({ children, ...others }) => {
+  return (
+    <Typography variant="h6" {...others}>
+      {children}
+    </Typography>
+  );
 };
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -64,7 +69,8 @@ const CheckModal = ({ open, id, onClose, onSuccess, type }) => {
     isLoading: memberIsLoading,
     data: memberData,
     isError: memberIsError,
-    error: memberError
+    error: memberError,
+    reset: getMemberReset
   } = useMutation(id => activityMemberService.get(id), {
     onSuccess() {
       if (!isCheckin) {
@@ -76,31 +82,22 @@ const CheckModal = ({ open, id, onClose, onSuccess, type }) => {
   const {
     mutate: checkin,
     isLoading: checkinIsLoading,
-    data: checkinData,
     isError: checkinIsError,
-    error: checkinError
-  } = useMutation(({ id, checkForId }) => activityMemberService.check(id, checkForId), {
-    onSuccess(response) {
-      onSuccess(response);
-    }
+    error: checkinError,
+    reset: checkinReset
+  } = useMutation(({ id, delegateForId }) => activityMemberService.check(id, delegateForId), {
+    onSuccess: (response, params) => onSuccess(response, "checkin", !!params.delegateForId)
   });
 
   const {
     mutate: delegateFor,
     isLoading: delegateForIsLoading,
-    data: delegateForData,
     isError: delegateForIsError,
-    error: delegateForError
-  } = useMutation(
-    ({ id, delegateForId }) => {
-      return activityMemberService.delegateFor(id, delegateForId);
-    },
-    {
-      onSuccess(response) {
-        onSuccess(response);
-      }
-    }
-  );
+    error: delegateForError,
+    reset: delegateForReset
+  } = useMutation(({ id, delegateForId }) => activityMemberService.delegateFor(id, delegateForId), {
+    onSuccess: response => onSuccess(response, "delegate_for", true)
+  });
 
   const { handleSubmit, register, control, watch, setValue, reset } = useForm({
     defaultValues: {
@@ -121,17 +118,13 @@ const CheckModal = ({ open, id, onClose, onSuccess, type }) => {
   }, [id, open, getMember]);
 
   const handleCheck = data => {
-    if (isCheckin) {
-      checkin({
-        id,
-        checkForId: data.delegateFor ? data.delegateForMember.id : null
-      });
-    } else {
-      delegateFor({
-        id,
-        delegateForId: data.delegateFor ? data.delegateForMember.id : null
-      });
-    }
+    const params = {
+      id,
+      delegateForId: data.delegateFor ? data.delegateForMember.id : null
+    };
+
+    if (isCheckin) checkin(params);
+    else delegateFor(params);
   };
 
   const [delegateForSelectModal, setDelegateForSelectModal] = useState(false);
@@ -144,6 +137,15 @@ const CheckModal = ({ open, id, onClose, onSuccess, type }) => {
   };
   const handleDelegateForClick = () => {
     setDelegateForSelectModal(true);
+  };
+
+  const handleCloseError = () => {
+    checkinReset();
+    delegateForReset();
+  };
+
+  const handleReload = () => {
+    getMember(id);
   };
 
   useEffect(() => {
@@ -177,9 +179,29 @@ const CheckModal = ({ open, id, onClose, onSuccess, type }) => {
         </AppBar>
         <DialogContent>
           {memberIsError && (
-            <Alert variant="outlined" severity="error">
-              <AlertTitle>Error</AlertTitle>
+            <Alert
+              severity="error"
+              sx={{ mb: 1 }}
+              action={
+                <Button color="inherit" size="small" onClick={handleReload}>
+                  重新讀取
+                </Button>
+              }
+            >
+              <AlertTitle>錯誤</AlertTitle>
               {memberError.message}
+            </Alert>
+          )}
+          {checkinIsError && (
+            <Alert severity="error" onClose={handleCloseError} sx={{ mb: 1 }}>
+              <AlertTitle>錯誤</AlertTitle>
+              {checkinError.message}
+            </Alert>
+          )}
+          {delegateForIsError && (
+            <Alert severity="error" onClose={handleCloseError} sx={{ mb: 1 }}>
+              <AlertTitle>錯誤</AlertTitle>
+              {delegateForError.message}
             </Alert>
           )}
           {memberIsLoading && (
@@ -227,8 +249,12 @@ const CheckModal = ({ open, id, onClose, onSuccess, type }) => {
                   <Label>狀態</Label>
                 </Grid>
                 <Grid item xs={9} md={5}>
-                  {memberData.checkin_status === "valid" && <Text>完成報到</Text>}
-                  {memberData.checkin_status === "invalid" && <Text>尚未報到</Text>}
+                  {memberData.checkin_status === "valid" && (
+                    <Text sx={{ color: green[600] }}>完成報到</Text>
+                  )}
+                  {memberData.checkin_status === "invalid" && (
+                    <Text sx={{ color: grey[600] }}>尚未報到</Text>
+                  )}
                 </Grid>
                 {memberData.delegate_for_member_id && (
                   <>
@@ -236,7 +262,7 @@ const CheckModal = ({ open, id, onClose, onSuccess, type }) => {
                       <Label>代理他人</Label>
                     </Grid>
                     <Grid item xs={9} md={5}>
-                      {memberData.delegate_for_name}
+                      <MemberDelegateForChip member={memberData} />
                     </Grid>
                   </>
                 )}
@@ -266,7 +292,7 @@ const CheckModal = ({ open, id, onClose, onSuccess, type }) => {
                 <Button
                   fullWidth
                   variant="outlined"
-                  color={delegateForMember ? "primary" : "warning"}
+                  color="primary"
                   onClick={handleDelegateForClick}
                   sx={{
                     borderStyle: delegateForMember ? "solid" : "dashed"

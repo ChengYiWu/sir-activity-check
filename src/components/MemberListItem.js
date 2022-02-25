@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { grey, deepOrange, green } from "@mui/material/colors";
 import MemberListItemStatus from "./MemberListItemStatus";
+import { MemberDelegateForChip, MemberDelegatedByChip } from "./MemberDelegateChip";
 
 const MemberListItem = ({ member, onCheck, onCancelCheck, onCancelCheckFor, onCheckFor }) => {
   const {
@@ -139,56 +140,58 @@ const MemberListItem = ({ member, onCheck, onCancelCheck, onCancelCheckFor, onCh
       />
       <CardContent sx={{ py: 0, px: 1 }}>
         {delegated_by_member_id && (
-          <Chip
-            sx={{ ...chipStyle, borderColor: deepOrange[600], borderStyle: "dashed" }}
-            size="medium"
-            variant="outlined"
-            avatar={
-              <Avatar sx={{ bgcolor: deepOrange[600], color: "white", marginRight: "12px" }}>
-                <span style={{ color: "white" }}>{delegated_by_seq_number}</span>
-              </Avatar>
-            }
-            label={
-              <>
-                <Box sx={{ color: grey[500] }}>
-                  {delegated_by_license_number} - {delegated_by_company_name}
-                </Box>
-                <Box sx={{ fontSize: "16px" }}>
-                  {delegated_by_name}
-                  <Box component="span" sx={{ fontSize: "12px", color: grey[500] }}>
-                    {" "}
-                    {delegated_by_title}
-                  </Box>
-                </Box>
-              </>
-            }
-          />
+          <MemberDelegatedByChip member={member} />
+          // <Chip
+          //   sx={{ ...chipStyle, borderColor: deepOrange[600], borderStyle: "dashed" }}
+          //   size="medium"
+          //   variant="outlined"
+          //   avatar={
+          //     <Avatar sx={{ bgcolor: deepOrange[600], color: "white", marginRight: "12px" }}>
+          //       <span style={{ color: "white" }}>{delegated_by_seq_number}</span>
+          //     </Avatar>
+          //   }
+          //   label={
+          //     <>
+          //       <Box sx={{ color: grey[500] }}>
+          //         {delegated_by_license_number} - {delegated_by_company_name}
+          //       </Box>
+          //       <Box sx={{ fontSize: "16px" }}>
+          //         {delegated_by_name}
+          //         <Box component="span" sx={{ fontSize: "12px", color: grey[500] }}>
+          //           {" "}
+          //           {delegated_by_title}
+          //         </Box>
+          //       </Box>
+          //     </>
+          //   }
+          // />
         )}
         {delegate_for_member_id && (
-          <Chip
-            sx={{ ...chipStyle, borderColor: green[600] }}
-            size="medium"
-            variant="outlined"
-            avatar={
-              <Avatar sx={{ bgcolor: green[600], color: "white", marginRight: "12px" }}>
-                <span style={{ color: "white" }}>{delegate_for_seq_number}</span>
-              </Avatar>
-            }
-            label={
-              <>
-                <Box sx={{ color: grey[500] }}>
-                  {delegate_for_license_number} - {delegate_for_company_name}
-                </Box>
-                <Box sx={{ fontSize: "16px" }}>
-                  {delegate_for_name}
-                  <Box component="span" sx={{ fontSize: "12px", color: grey[500] }}>
-                    {" "}
-                    {delegate_for_title}
-                  </Box>
-                </Box>
-              </>
-            }
-          />
+          <MemberDelegateForChip member={member} />
+          // <Chip
+          //   sx={{ ...chipStyle, borderColor: green[600] }}
+          //   size="medium"
+          //   variant="outlined"
+          //   avatar={
+          //     <Avatar sx={{ bgcolor: green[600], color: "white", marginRight: "12px" }}>
+          //       <span style={{ color: "white" }}>{delegate_for_seq_number}</span>
+          //     </Avatar>
+          //   }
+          //   label={
+          //     <>
+          //       <Box sx={{ color: grey[500] }}>
+          //         {delegate_for_license_number} - {delegate_for_company_name}
+          //       </Box>
+          //       <Box sx={{ fontSize: "16px" }}>
+          //         {delegate_for_name}
+          //         <Box component="span" sx={{ fontSize: "12px", color: grey[500] }}>
+          //           {" "}
+          //           {delegate_for_title}
+          //         </Box>
+          //       </Box>
+          //     </>
+          //   }
+          // />
         )}
       </CardContent>
       <CardActions sx={{ display: "flex" }}>{renderButtons()}</CardActions>

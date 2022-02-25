@@ -1,16 +1,17 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { Divider, Box, Stack, Typography } from "@mui/material";
+import { Divider, Box, Stack, Typography, Alert, AlertTitle } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { activityMemberService } from "../services";
 import { modalActions, maskActions } from "../actions";
 import { useDispatch } from "react-redux";
 import { useMutation } from "react-query";
 import CheckModal, { CheckModalType } from "../components/CheckModal";
-import { grey, red } from "@mui/material/colors";
+import { grey, red, green } from "@mui/material/colors";
 import HomeForm from "../components/HomeForm";
 import HomeSearchResult from "../components/HomeSearchResult";
 import UncheckConfirmModal from "../components/UncheckConfirmModal";
 import { queryConditionCache } from "../utils";
+import { MemberDelegateForChip } from "../components/MemberDelegateChip";
 
 const useCancelCheck = ({
   service,
@@ -34,7 +35,7 @@ const useCancelCheck = ({
     },
     onError(error) {
       dispatch(
-        modalActions.show("Error", {
+        modalActions.show("ERROR", {
           content: error.message
         })
       );
@@ -103,9 +104,9 @@ const useCheckModal = onSuccess => {
     setModal({ id: null, open: false, type: CheckModalType.CHECKIN });
   };
 
-  const handleSuccess = response => {
+  const handleSuccess = function () {
     handleClose();
-    onSuccess && onSuccess(response);
+    onSuccess && onSuccess.apply(this, arguments);
   };
 
   return {
@@ -134,7 +135,12 @@ const Home = ({ getStatistics }) => {
   const [searchCondition, setSearchCondition] = useState(null);
   const [members, setMembers] = useState([]);
 
-  const { mutate: search, isLoading: searchLoading } = useSearchActivityMembers(setMembers);
+  const {
+    mutate: search,
+    isLoading: searchLoading,
+    isError: searchIsError,
+    error: searchError
+  } = useSearchActivityMembers(setMembers);
 
   useEffect(() => {
     // 重整時可載入上一次查詢結果
@@ -169,24 +175,38 @@ const Home = ({ getStatistics }) => {
     modalProps: checkModalProps,
     openCheckinModal,
     openDelegateForModal
-  } = useCheckModal(({ message, delegate_seq_number }) => {
+  } = useCheckModal(({ member }, type, isUpdatedDelegateFor) => {
     searchReload();
     setTimeout(() => {
+      const isCheckin = type === "checkin";
+      const { license_number, name } = member;
       dispatch(
         modalActions.show("SUCCESS", {
+          title: isCheckin
+            ? `本人報到${isUpdatedDelegateFor ? "及代理出席" : ""}成功`
+            : "代理出席成功",
           content: (
-            <Box>
-              {message}
-              {delegate_seq_number && (
-                <Box>
-                  （委託票領取號碼：
-                  <Typography variant="h6" sx={{ display: "inline-block" }}>
-                    {delegate_seq_number}
-                  </Typography>
-                  ）
+            <Stack spacing={2}>
+              <Box>
+                【
+                <Box component="span" sx={{ color: grey[400], mx: "3px", fontSize: "18px" }}>
+                  {license_number}
                 </Box>
+                <Box
+                  component="span"
+                  sx={{ color: green[700], fontSize: "20px", fontWeight: 600, mr: "3px" }}
+                >
+                  {name}
+                </Box>
+                】{isCheckin && "本人報到成功"}
+              </Box>
+              {isUpdatedDelegateFor && (
+                <>
+                  <Divider>代理出席</Divider>
+                  <MemberDelegateForChip member={member} />
+                </>
               )}
-            </Box>
+            </Stack>
           )
         })
       );
@@ -201,37 +221,30 @@ const Home = ({ getStatistics }) => {
     },
     confirmTitle: () => "取消代理出席",
     confirmContent: selectedMember => {
-      const {
-        delegate_for_member_id,
-        delegate_for_name,
-        delegate_for_company_name,
-        delegate_for_seq_number
-      } = selectedMember;
+      const { license_number, name } = selectedMember;
       return (
         <Stack spacing={2}>
-          <Box component="span" sx={{ fontWeight: 600, fontSize: "large" }}>
-            {delegate_for_company_name} / {delegate_for_name}
-          </Box>
-          的委託出席確定要取消嗎?
-          {delegate_for_member_id && (
-            <Box sx={{ fontSize: "small", color: red[600] }}>
-              (請務必確認已回收號碼牌
-              <Box
-                component="span"
-                sx={{ color: grey[800], fontSize: "large", fontWeight: 600, mx: "3px" }}
-              >
-                {delegate_for_seq_number}
-              </Box>
-              號)
+          <Box component="span">
+            確定取消【
+            <Box component="span" sx={{ color: grey[400], mx: "3px", fontSize: "18px" }}>
+              {license_number}
             </Box>
-          )}
+            <Box
+              component="span"
+              sx={{ color: green[700], fontSize: "20px", fontWeight: 600, mr: "3px" }}
+            >
+              {name}
+            </Box>
+            】 的代理出席嗎？
+          </Box>
+          <MemberDelegateForChip member={selectedMember} />
         </Stack>
       );
     }
   });
 
   const { mutate: uncheck } = useMutation(
-    params => activityMemberService.cancelCheck(params.id, params.cancelDelegateFor),
+    params => activityMemberService.uncheck(params.id, params.cancelDelegateFor),
     {
       onSuccess(data) {
         dispatch(
@@ -244,7 +257,7 @@ const Home = ({ getStatistics }) => {
       },
       onError(error) {
         dispatch(
-          modalActions.show("Error", {
+          modalActions.show("ERROR", {
             content: error.message
           })
         );
@@ -275,6 +288,12 @@ const Home = ({ getStatistics }) => {
   return (
     <>
       <Box sx={{ mt: 1 }}>
+        {searchIsError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            <AlertTitle>錯誤</AlertTitle>
+            {searchError.message}
+          </Alert>
+        )}
         <HomeForm form={form} onSearch={handleSearch} onClear={handleClearConditionForm} />
         <Divider sx={{ my: 1 }}>
           搜尋結果

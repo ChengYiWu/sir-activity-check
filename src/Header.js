@@ -35,10 +35,10 @@ const Header = ({ statistics }) => {
 
   const [statisticsModal, setStatisticsModal] = useState(false);
   const handleOpenStatisticsModal = () => {
+    handleCloseUserMenu();
     setStatisticsModal(true);
   };
   const handleCloseStatisticsModal = () => {
-    handleCloseUserMenu();
     setStatisticsModal(false);
   };
 

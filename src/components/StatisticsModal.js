@@ -1,7 +1,54 @@
 import React from "react";
-import { Box, Dialog, DialogContent, DialogTitle, Typography } from "@mui/material";
-import { Info, Assessment } from "@mui/icons-material";
-import { grey } from "@mui/material/colors";
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Typography,
+  Card,
+  CardContent,
+  Grid,
+  Stack
+} from "@mui/material";
+import { Assessment } from "@mui/icons-material";
+import { deepOrange, grey } from "@mui/material/colors";
+import NP from "number-precision";
+import numeral from "numeral";
+
+const format = number => {
+  return numeral(number).format("0,0");
+};
+
+const StatistcsCardHeader = ({ title }) => {
+  return (
+    <Typography sx={{ fontSize: 14, fontWeight: 700 }} color={grey[500]} gutterBottom>
+      {title}
+    </Typography>
+  );
+};
+
+const StatistcsCard = ({ title, children }) => {
+  return (
+    <Card variant="outlined" sx={{ height: "100%" }}>
+      <CardContent>
+        <StatistcsCardHeader title={title} />
+        <Box>{children}</Box>
+      </CardContent>
+    </Card>
+  );
+};
+
+const StatistcsCardUnit = ({ label }) => {
+  return (
+    <Typography component="span" variant="subtitle2" sx={{ ml: "3px" }}>
+      {label}
+    </Typography>
+  );
+};
+
+const StatistcsCardNumber = ({ number }) => {
+  return <Typography component="span">{format(number)}</Typography>;
+};
 
 const StatisticsModal = ({ open, onClose, statistics }) => {
   const {
@@ -12,6 +59,13 @@ const StatisticsModal = ({ open, onClose, statistics }) => {
     total_uncheck_count,
     valid_delegate_count
   } = statistics?.statistics || {};
+
+  const checkinRate = statistics
+    ? NP.round(
+        NP.times(NP.divide(total_check_for_count + total_own_check_count, total_member_count), 100),
+        1
+      )
+    : 0;
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
@@ -26,31 +80,56 @@ const StatisticsModal = ({ open, onClose, statistics }) => {
         </Box>
       </DialogTitle>
       <DialogContent sx={{ px: 2 }}>
-        <Box sx={{ mb: 2 }}>
-          會員數 {total_member_count} 位 / 報到 {total_own_check_count} 位 / 委託出席{" "}
-          {total_check_for_count} 人
-          <Typography variant="caption" component="div" sx={{ color: grey[600] }}>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-start" }}>
-              <Info sx={{ fontSize: 14, mr: "3px" }} />
-              <Box component="span">
-                有效委託投票數
-                <Box component="span" sx={{ color: grey[800], fontSize: "large", mx: "3px" }}>
-                  {valid_delegate_count}
+        <Grid container spacing={1}>
+          <Grid item xs={6}>
+            <StatistcsCard title="總會員數">
+              <StatistcsCardNumber number={total_member_count} />
+              <StatistcsCardUnit label="位" />
+            </StatistcsCard>
+          </Grid>
+          <Grid item xs={6}>
+            <StatistcsCard title="出席率">
+              <Typography component="span">{checkinRate}</Typography>
+              <StatistcsCardUnit label="%" />
+            </StatistcsCard>
+          </Grid>
+
+          <Grid item xs={6}>
+            <StatistcsCard title="本人報到">
+              <StatistcsCardNumber number={total_own_check_count} />
+              <StatistcsCardUnit label="位" />
+            </StatistcsCard>
+          </Grid>
+          <Grid item xs={6}>
+            <StatistcsCard title="尚未出席">
+              <StatistcsCardNumber number={total_uncheck_count} />
+              <StatistcsCardUnit label="位" />
+            </StatistcsCard>
+          </Grid>
+          <Grid item xs={12}>
+            <StatistcsCard title="委託出席">
+              <Stack>
+                <Box component="span">
+                  <StatistcsCardNumber number={total_check_for_count} />
+                  <StatistcsCardUnit label="位" />
+                  <Typography
+                    component="span"
+                    sx={{ fontSize: "10px", ml: "6px", color: deepOrange[700] }}
+                  >
+                    有效 {format(valid_delegate_count)} 位
+                  </Typography>
                 </Box>
-                位
-                {valid_delegate_count > 0 && (
-                  <span>
-                    ，領取號碼為
-                    <Box component="span" sx={{ color: grey[800], fontSize: "large", mx: "3px" }}>
-                      {lastest_valid_delegate_seq_number}
-                    </Box>
-                    號（含）以前。
-                  </span>
-                )}
-              </Box>
-            </Box>
-          </Typography>
-        </Box>
+                <Typography component="span" sx={{ fontSize: "12px" }}>
+                  號碼牌
+                  <Typography component="span" sx={{ mx: "3px" }}>
+                    {lastest_valid_delegate_seq_number}
+                  </Typography>
+                  號 (含) 以前有效
+                </Typography>
+              </Stack>
+            </StatistcsCard>
+          </Grid>
+        </Grid>
       </DialogContent>
     </Dialog>
   );

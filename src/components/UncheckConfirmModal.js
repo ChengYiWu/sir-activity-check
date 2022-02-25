@@ -14,11 +14,18 @@ import {
 } from "@mui/material";
 import { ErrorOutline } from "@mui/icons-material";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { grey, red } from "@mui/material/colors";
+import { grey, red, green } from "@mui/material/colors";
+import { MemberDelegateForChip } from "./MemberDelegateChip";
 
 const UncheckConfirmModal = ({ member, open, onOk, onCancel }) => {
-  const { name, company_name, delegate_for_member_id, delegate_for_name, delegate_for_seq_number } =
-    member || {};
+  const {
+    name,
+    license_number,
+    company_name,
+    delegate_for_member_id,
+    delegate_for_name,
+    delegate_for_seq_number
+  } = member || {};
 
   const [cancelDelegateFor, setCancelDelegateFor] = useState(false);
 
@@ -51,10 +58,19 @@ const UncheckConfirmModal = ({ member, open, onOk, onCancel }) => {
       <DialogContent sx={{ px: 2 }}>
         <DialogContentText sx={{ ml: 4 }}>
           <Stack spacing={2}>
-            <Box component="span" sx={{ fontWeight: 600, fontSize: "large" }}>
-              {company_name} / {name}
+            <Box component="span">
+              確定取消【
+              <Box component="span" sx={{ color: grey[400], mx: "3px", fontSize: "18px" }}>
+                {license_number}
+              </Box>
+              <Box
+                component="span"
+                sx={{ color: green[700], fontSize: "20px", fontWeight: 600, mr: "3px" }}
+              >
+                {name}
+              </Box>】
+              的報到紀錄嗎？
             </Box>
-            的報到紀錄確定要取消嗎?
           </Stack>
           {delegate_for_member_id && (
             <>
@@ -68,26 +84,11 @@ const UncheckConfirmModal = ({ member, open, onOk, onCancel }) => {
                       onChange={e => setCancelDelegateFor(e.target.checked)}
                     />
                   }
-                  label="一併取消代理他人出席"
+                  label="一併取消代理出席"
                   labelPlacement="end"
                 />
               </FormControl>
-              {cancelDelegateFor && (
-                <Box sx={{ fontSize: "small", color: red[600] }}>
-                  (
-                  <Box component="span" sx={{ color: grey[800], fontWeight: 600, mx: "3px" }}>
-                    {delegate_for_name}
-                  </Box>
-                  的委託出席將會被一併取消，請回收
-                  <Box
-                    component="span"
-                    sx={{ color: grey[800], fontSize: "large", fontWeight: 600, mx: "3px" }}
-                  >
-                    {delegate_for_seq_number}
-                  </Box>{" "}
-                  號號碼牌)
-                </Box>
-              )}
+              {cancelDelegateFor && <MemberDelegateForChip member={member} />}
             </>
           )}
         </DialogContentText>

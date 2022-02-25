@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { List, ListItem, ListSubheader, Box, Divider } from "@mui/material";
+import { List, ListItem, ListSubheader, Box, Divider, Typography } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { groupBy } from "lodash";
 import MemberListItemSkeleton from "./MemberListItemSkeleton";
@@ -51,12 +51,14 @@ const HomeSearchResult = ({
             <li key={`section-${license_number}`}>
               <ul>
                 {index !== 0 && <Divider sx={{ mt: 2 }} />}
-                <ListSubheader sx={{ top: "56px", fontSize: "large" }}>
-                  {license_number} - {company_name}
+                <ListSubheader sx={{ top: "56px" }}>
+                  <Typography variant="h6" noWrap sx={{ my: 1 }}>
+                    {license_number} - {company_name}
+                  </Typography>
                 </ListSubheader>
                 <Divider sx={{ mb: 2 }} />
                 {members.map(member => (
-                  <ListItem key={`${member.id}`} sx={{ px : 1}}>
+                  <ListItem key={`${member.id}`} sx={{ px: 1 }}>
                     <MemberListItem
                       member={member}
                       onCheck={onCheck}
