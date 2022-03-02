@@ -116,16 +116,18 @@ const StatisticsModal = ({ open, onClose, statistics }) => {
                     component="span"
                     sx={{ fontSize: "10px", ml: "6px", color: deepOrange[700] }}
                   >
-                    有效 {format(valid_delegate_count)} 位
+                    （有效 {format(valid_delegate_count)} 位）
                   </Typography>
                 </Box>
-                <Typography component="span" sx={{ fontSize: "12px" }}>
-                  號碼牌
-                  <Typography component="span" sx={{ mx: "3px" }}>
-                    {lastest_valid_delegate_seq_number}
+                {lastest_valid_delegate_seq_number && (
+                  <Typography component="span" sx={{ fontSize: "12px" }}>
+                    號碼牌
+                    <Typography component="span" sx={{ mx: "3px" }}>
+                      {lastest_valid_delegate_seq_number}
+                    </Typography>
+                    號 (含) 以前有效
                   </Typography>
-                  號 (含) 以前有效
-                </Typography>
+                )}
               </Stack>
             </StatistcsCard>
           </Grid>

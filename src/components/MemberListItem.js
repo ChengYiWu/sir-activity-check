@@ -13,6 +13,7 @@ import {
 import { grey, deepOrange, green } from "@mui/material/colors";
 import MemberListItemStatus from "./MemberListItemStatus";
 import { MemberDelegateForChip, MemberDelegatedByChip } from "./MemberDelegateChip";
+import MemberCardPaperLocation from "./MemberCardPaperLocation";
 
 const MemberListItem = ({ member, onCheck, onCancelCheck, onCancelCheckFor, onCheckFor }) => {
   const {
@@ -113,7 +114,14 @@ const MemberListItem = ({ member, onCheck, onCancelCheck, onCancelCheckFor, onCh
       : "primary.main";
 
   return (
-    <Card sx={{ width: "100%", borderColor: borderColor, borderWidth: "2px" }} variant="outlined">
+    <Card
+      sx={{
+        width: "100%",
+        borderColor: borderColor,
+        borderWidth: "2px"
+      }}
+      variant="outlined"
+    >
       <CardHeader
         sx={{
           width: "100%",
@@ -131,70 +139,23 @@ const MemberListItem = ({ member, onCheck, onCancelCheck, onCancelCheckFor, onCh
         }
         subheader={
           <Box component="span" sx={{ display: "flex", alignItems: "center" }}>
-            <Typography variant="subtitle2" component="span" sx={{ color: grey[500], ml: "3px" }}>
+            <MemberCardPaperLocation paperLocation="第三組 P20" />
+            {/* <Typography variant="subtitle2" component="span" sx={{ color: grey[500], ml: "3px" }}>
               {telephone}
-            </Typography>
+            </Typography> */}
           </Box>
         }
         action={<MemberListItemStatus member={member} />}
       />
       <CardContent sx={{ py: 0, px: 1 }}>
-        {delegated_by_member_id && (
-          <MemberDelegatedByChip member={member} />
-          // <Chip
-          //   sx={{ ...chipStyle, borderColor: deepOrange[600], borderStyle: "dashed" }}
-          //   size="medium"
-          //   variant="outlined"
-          //   avatar={
-          //     <Avatar sx={{ bgcolor: deepOrange[600], color: "white", marginRight: "12px" }}>
-          //       <span style={{ color: "white" }}>{delegated_by_seq_number}</span>
-          //     </Avatar>
-          //   }
-          //   label={
-          //     <>
-          //       <Box sx={{ color: grey[500] }}>
-          //         {delegated_by_license_number} - {delegated_by_company_name}
-          //       </Box>
-          //       <Box sx={{ fontSize: "16px" }}>
-          //         {delegated_by_name}
-          //         <Box component="span" sx={{ fontSize: "12px", color: grey[500] }}>
-          //           {" "}
-          //           {delegated_by_title}
-          //         </Box>
-          //       </Box>
-          //     </>
-          //   }
-          // />
-        )}
-        {delegate_for_member_id && (
-          <MemberDelegateForChip member={member} />
-          // <Chip
-          //   sx={{ ...chipStyle, borderColor: green[600] }}
-          //   size="medium"
-          //   variant="outlined"
-          //   avatar={
-          //     <Avatar sx={{ bgcolor: green[600], color: "white", marginRight: "12px" }}>
-          //       <span style={{ color: "white" }}>{delegate_for_seq_number}</span>
-          //     </Avatar>
-          //   }
-          //   label={
-          //     <>
-          //       <Box sx={{ color: grey[500] }}>
-          //         {delegate_for_license_number} - {delegate_for_company_name}
-          //       </Box>
-          //       <Box sx={{ fontSize: "16px" }}>
-          //         {delegate_for_name}
-          //         <Box component="span" sx={{ fontSize: "12px", color: grey[500] }}>
-          //           {" "}
-          //           {delegate_for_title}
-          //         </Box>
-          //       </Box>
-          //     </>
-          //   }
-          // />
-        )}
+        {delegated_by_member_id && <MemberDelegatedByChip member={member} />}
+        {delegate_for_member_id && <MemberDelegateForChip member={member} />}
       </CardContent>
-      <CardActions sx={{ display: "flex" }}>{renderButtons()}</CardActions>
+      <CardActions
+        sx={{ display: "flex", pt: delegated_by_member_id || delegate_for_member_id ? 2 : 0 }}
+      >
+        {renderButtons()}
+      </CardActions>
     </Card>
   );
 };

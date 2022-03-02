@@ -11,6 +11,9 @@ import ModalContainer from "./components/Modal/ModalContainer";
 import { useMutation } from "react-query";
 import { activityMemberService } from "./services";
 import "./App.css";
+import NP from "number-precision";
+
+NP.enableBoundaryChecking(false);
 
 export const history = createBrowserHistory({
   basename: process.env.PUBLIC_URL

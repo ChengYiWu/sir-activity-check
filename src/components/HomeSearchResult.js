@@ -52,7 +52,7 @@ const HomeSearchResult = ({
               <ul>
                 {index !== 0 && <Divider sx={{ mt: 2 }} />}
                 <ListSubheader sx={{ top: "56px" }}>
-                  <Typography variant="h6" noWrap sx={{ my: 1 }}>
+                  <Typography variant="h6" noWrap sx={{ py: 1 }}>
                     {license_number} - {company_name}
                   </Typography>
                 </ListSubheader>
