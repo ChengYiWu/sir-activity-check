@@ -2,9 +2,10 @@ import React from "react";
 import { CardHeader, Typography, Box } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import MemberListItemStatus from "./MemberListItemStatus";
+import MemberCardPaperLocation from "./MemberCardPaperLocation";
 
 const MemberCardHeader = ({ member, ...others }) => {
-  const { name, title, telephone } = member;
+  const { name, title, telephone, attendance_book_location } = member;
   return (
     <CardHeader
       {...others}
@@ -19,7 +20,7 @@ const MemberCardHeader = ({ member, ...others }) => {
       subheader={
         <Box component="span" sx={{ display: "flex", alignItems: "center" }}>
           <Typography variant="subtitle2" component="span" sx={{ color: grey[600], ml: "3px" }}>
-            {telephone}
+            <MemberCardPaperLocation paperLocation={attendance_book_location} />
           </Typography>
         </Box>
       }

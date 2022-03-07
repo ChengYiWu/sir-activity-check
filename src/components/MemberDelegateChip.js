@@ -1,6 +1,7 @@
 import React from "react";
 import { Avatar, Box, Chip, Typography } from "@mui/material";
 import { grey, green, deepOrange } from "@mui/material/colors";
+import MemberCardPaperLocation from "./MemberCardPaperLocation";
 
 const getMemberField = (prefix, member) => field => {
   return member[`${prefix}_${field}`];
@@ -41,6 +42,15 @@ const MemberDelegateChip = ({ member, fieldPrefix, type }) => {
             <Box component="span" sx={{ fontSize: "12px", color: grey[500] }}>
               {" "}
               {getMemberInfo("title")}
+            </Box>
+            <Box component="span" sx={{ fontSize: "12px", color: grey[500], ml: "3px" }}>
+              (
+              <MemberCardPaperLocation
+                paperLocation={getMemberInfo("attendance_book_location")}
+                inline={true}
+                sx={{ fontSize: "12px", color: grey[500] }}
+              />
+              )
             </Box>
           </Box>
         </>

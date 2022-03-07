@@ -239,11 +239,17 @@ const CheckModal = ({ open, id, onClose, onSuccess, type }) => {
                     </Typography>
                   </Text>
                 </Grid>
-                <Grid item xs={3} md={1}>
+                {/* <Grid item xs={3} md={1}>
                   <Label>電話</Label>
+                </Grid> */}
+                {/* <Grid item xs={9} md={5}>
+                  <Text>{memberData.telephone}</Text>
+                </Grid> */}
+                <Grid item xs={3} md={1}>
+                  <Label>簽到簿</Label>
                 </Grid>
                 <Grid item xs={9} md={5}>
-                  <Text>{memberData.telephone}</Text>
+                  <Text>{memberData.attendance_book_location}</Text>
                 </Grid>
                 <Grid item xs={3} md={1}>
                   <Label>狀態</Label>

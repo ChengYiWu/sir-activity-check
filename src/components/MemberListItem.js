@@ -139,7 +139,7 @@ const MemberListItem = ({ member, onCheck, onCancelCheck, onCancelCheckFor, onCh
         }
         subheader={
           <Box component="span" sx={{ display: "flex", alignItems: "center" }}>
-            <MemberCardPaperLocation paperLocation="第三組 P20" />
+            <MemberCardPaperLocation paperLocation={attendance_book_location} />
             {/* <Typography variant="subtitle2" component="span" sx={{ color: grey[500], ml: "3px" }}>
               {telephone}
             </Typography> */}
