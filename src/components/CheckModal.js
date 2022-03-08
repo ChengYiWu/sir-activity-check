@@ -317,7 +317,7 @@ const CheckModal = ({ open, id, onClose, onSuccess, type }) => {
             </Box>
           )}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ mb: 3}}>
           <LoadingButton
             size="large"
             fullWidth
