@@ -155,6 +155,7 @@ const Home = ({ getStatistics }) => {
   const handleSearch = data => {
     setMembers([]);
     search(data);
+    getStatistics();
     setSearchCondition(data);
     // 暫存上次查詢結果
     queryConditionCache.set(data);
