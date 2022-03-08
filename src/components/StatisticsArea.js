@@ -31,7 +31,6 @@ const StatisticsArea = ({ statistics, loading }) => {
             </Box>
             。
             <Box component="span">
-              {/* TODO，樣式設計 */}
               無效票：
               {cancelledDelegateHistories.map(history => (
                 <Box component="span" sx={{ mr: "4px" }}>

@@ -149,6 +149,8 @@ const Home = ({ getStatistics }) => {
       Object.keys(condition).forEach(key => form.setValue(key, condition[key]));
       setSearchCondition(condition);
       search(condition);
+    }else {
+      getStatistics();
     }
   }, []);
 

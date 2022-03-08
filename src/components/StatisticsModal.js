@@ -11,7 +11,7 @@ import {
   Stack
 } from "@mui/material";
 import { Assessment } from "@mui/icons-material";
-import { deepOrange, grey } from "@mui/material/colors";
+import { deepOrange, grey, green, red } from "@mui/material/colors";
 import NP from "number-precision";
 import numeral from "numeral";
 
@@ -46,8 +46,12 @@ const StatistcsCardUnit = ({ label }) => {
   );
 };
 
-const StatistcsCardNumber = ({ number }) => {
-  return <Typography component="span">{format(number)}</Typography>;
+const StatistcsCardNumber = ({ number, sx, isFormat = true }) => {
+  return (
+    <Typography component="span" sx={{ fontWeight: 600, fontSize: "20px", ...sx }}>
+      {isFormat ? format(number) : number}
+    </Typography>
+  );
 };
 
 const StatisticsModal = ({ open, onClose, statistics }) => {
@@ -83,26 +87,30 @@ const StatisticsModal = ({ open, onClose, statistics }) => {
         <Grid container spacing={1}>
           <Grid item xs={6}>
             <StatistcsCard title="總會員數">
-              <StatistcsCardNumber number={total_member_count} />
+              <StatistcsCardNumber number={total_member_count} sx={{ color: "primary.main" }} />
               <StatistcsCardUnit label="位" />
             </StatistcsCard>
           </Grid>
           <Grid item xs={6}>
             <StatistcsCard title="出席率">
-              <Typography component="span">{checkinRate}</Typography>
+              <StatistcsCardNumber
+                number={checkinRate}
+                sx={{ color: green[700] }}
+                isFormat={false}
+              />
               <StatistcsCardUnit label="%" />
             </StatistcsCard>
           </Grid>
 
           <Grid item xs={6}>
             <StatistcsCard title="本人報到">
-              <StatistcsCardNumber number={total_own_check_count} />
+              <StatistcsCardNumber number={total_own_check_count} sx={{ color: green[700] }} />
               <StatistcsCardUnit label="位" />
             </StatistcsCard>
           </Grid>
           <Grid item xs={6}>
             <StatistcsCard title="尚未出席">
-              <StatistcsCardNumber number={total_uncheck_count} />
+              <StatistcsCardNumber number={total_uncheck_count} sx={{ color: red[700] }} />
               <StatistcsCardUnit label="位" />
             </StatistcsCard>
           </Grid>
@@ -110,11 +118,14 @@ const StatisticsModal = ({ open, onClose, statistics }) => {
             <StatistcsCard title="委託出席">
               <Stack>
                 <Box component="span">
-                  <StatistcsCardNumber number={total_check_for_count} />
+                  <StatistcsCardNumber
+                    number={total_check_for_count}
+                    sx={{ color: deepOrange[700] }}
+                  />
                   <StatistcsCardUnit label="位" />
                   <Typography
                     component="span"
-                    sx={{ fontSize: "10px", ml: "6px", color: deepOrange[700] }}
+                    sx={{ fontSize: "10px", ml: "6px", color: green[700] }}
                   >
                     （有效 {format(valid_delegate_count)} 位）
                   </Typography>
