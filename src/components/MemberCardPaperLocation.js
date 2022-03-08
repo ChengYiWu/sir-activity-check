@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import { Description } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 
-const MemberCardPaperLocation = ({ paperLocation, inline = false, sx }) => {
+const MemberCardPaperLocation = ({ paperLocation, inline = false, locationSx, iconSx }) => {
   return (
     <Box
       component="span"
@@ -14,8 +14,8 @@ const MemberCardPaperLocation = ({ paperLocation, inline = false, sx }) => {
         background: "white"
       }}
     >
-      {!inline && <Description sx={{ width: "14px" }} />}
-      <Box component="span" sx={{ ml: "3px", fontSize: "14px", ...sx }}>
+      <Description sx={{ width: "14px", ...iconSx }} />
+      <Box component="span" sx={{ ml: "3px", fontSize: "14px", ...locationSx }}>
         {paperLocation}
       </Box>
     </Box>

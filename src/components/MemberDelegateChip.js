@@ -43,14 +43,19 @@ const MemberDelegateChip = ({ member, fieldPrefix, type }) => {
               {" "}
               {getMemberInfo("title")}
             </Box>
-            <Box component="span" sx={{ fontSize: "12px", color: grey[500], ml: "3px" }}>
-              (
+            <Box
+              component="span"
+              sx={{ fontSize: "12px", color: grey[500], display: "inline-flex" }}
+            >
+              <Box component="span" sx={{ mx: "3px" }}>
+                /
+              </Box>
               <MemberCardPaperLocation
                 paperLocation={getMemberInfo("attendance_book_location")}
                 inline={true}
-                sx={{ fontSize: "12px", color: grey[500] }}
+                locationSx={{ fontSize: "12px", color: grey[500] }}
+                iconSx={{ height: "12px" }}
               />
-              )
             </Box>
           </Box>
         </>
