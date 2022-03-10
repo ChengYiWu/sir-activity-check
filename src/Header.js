@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   AppBar,
   IconButton,
@@ -42,6 +42,16 @@ const Header = ({ statistics }) => {
     setStatisticsModal(false);
   };
 
+  console.log("userInfo", userInfo);
+
+  const isAdmin = useMemo(() => {
+    if (userInfo) {
+      return !!userInfo.roles.find(role => role.key === "admin");
+    }
+
+    return false;
+  }, [userInfo]);
+
   return (
     <>
       <AppBar position="fixed">
@@ -79,12 +89,14 @@ const Header = ({ statistics }) => {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem onClick={handleOpenStatisticsModal}>
-                  <ListItemIcon sx={{ "& .MuiSvgIcon-root": { color: "primary.main" } }}>
-                    <Assessment />
-                  </ListItemIcon>
-                  <ListItemText sx={{ color: "primary.main" }}>統計資訊</ListItemText>
-                </MenuItem>
+                {isAdmin && (
+                  <MenuItem onClick={handleOpenStatisticsModal}>
+                    <ListItemIcon sx={{ "& .MuiSvgIcon-root": { color: "primary.main" } }}>
+                      <Assessment />
+                    </ListItemIcon>
+                    <ListItemText sx={{ color: "primary.main" }}>統計資訊</ListItemText>
+                  </MenuItem>
+                )}
                 <MenuItem onClick={logout}>
                   <ListItemIcon sx={{ "& .MuiSvgIcon-root": { color: "error.main" } }}>
                     <ExitToApp />

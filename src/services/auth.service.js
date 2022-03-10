@@ -15,15 +15,11 @@ export const authService = {
         telephone,
         password
       });
+      const { data } = response;
 
-      return response.data;
-
-      // return {
-      //   telephone: "0912345678",
-      //   token: "XXX",
-      //   username: "小幫手",
-      //   uuid: "1bfc6a30-857c-11e8-bf4f-8fffb96a95c6"
-      // };
+      return data.roles.find(role => role.key === "HylEmployee")
+        ? data
+        : Promise.reject({ message: "無權限登入" });
     } catch (error) {
       return Promise.reject({ ...error, message: error.serverMessage });
     }
