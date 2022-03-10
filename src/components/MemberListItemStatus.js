@@ -1,7 +1,7 @@
 import React from "react";
 import { Chip, Stack } from "@mui/material";
 import { CheckCircle, Cancel, DoneAll } from "@mui/icons-material";
-import { deepOrange } from "@mui/material/colors";
+import { deepOrange, yellow } from "@mui/material/colors";
 
 const MemberListItemStatus = ({ member }) => {
   const { checkin_status, delegated_by_member_id, delegate_for_member_id } = member;
@@ -19,7 +19,7 @@ const MemberListItemStatus = ({ member }) => {
           <Chip
             icon={<CheckCircle />}
             label="委託出席"
-            sx={{ bgcolor: deepOrange[600], color: "white", "& .MuiChip-icon": { color: "white" } }}
+            sx={{ bgcolor: yellow[700], color: "white", "& .MuiChip-icon": { color: "white" } }}
             size="small"
           />
         )}

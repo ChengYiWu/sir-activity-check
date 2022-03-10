@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar, Box, Chip, Typography } from "@mui/material";
-import { grey, green, deepOrange } from "@mui/material/colors";
+import { grey, green, deepOrange, yellow } from "@mui/material/colors";
 import MemberCardPaperLocation from "./MemberCardPaperLocation";
 
 const getMemberField = (prefix, member) => field => {
@@ -19,16 +19,16 @@ const MemberDelegateChip = ({ member, fieldPrefix, type }) => {
   const getMemberInfo = getMemberField(fieldPrefix, member || {});
 
   const chipStyle = { height: "auto", width: "100%", justifyContent: "flex-start" };
-  const color = type === "delegated_by" ? deepOrange : green;
+  const color = type === "delegated_by" ? yellow[700] : green[600];
   const borderStyle = type === "delegated_by" ? "dashed" : "solid";
 
   return (
     <Chip
-      sx={{ ...chipStyle, borderColor: color[600], borderStyle: borderStyle }}
+      sx={{ ...chipStyle, borderColor: color, borderStyle: borderStyle }}
       size="medium"
       variant="outlined"
       avatar={
-        <Avatar sx={{ bgcolor: color[600], color: "white", marginRight: "12px" }}>
+        <Avatar sx={{ bgcolor: color, color: "white", marginRight: "12px" }}>
           <span style={{ color: "white" }}>{getMemberInfo("seq_number")}</span>
         </Avatar>
       }

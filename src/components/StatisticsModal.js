@@ -11,7 +11,7 @@ import {
   Stack
 } from "@mui/material";
 import { Assessment } from "@mui/icons-material";
-import { deepOrange, grey, green, red } from "@mui/material/colors";
+import { deepOrange, grey, green, red, yellow } from "@mui/material/colors";
 import NP from "number-precision";
 import numeral from "numeral";
 
@@ -120,7 +120,7 @@ const StatisticsModal = ({ open, onClose, statistics }) => {
                 <Box component="span">
                   <StatistcsCardNumber
                     number={total_check_for_count}
-                    sx={{ color: deepOrange[700] }}
+                    sx={{ color: yellow[700] }}
                   />
                   <StatistcsCardUnit label="位" />
                   <Typography

@@ -113,9 +113,12 @@ const CheckModal = ({ open, id, onClose, onSuccess, type }) => {
 
   useEffect(() => {
     if (open && id) {
+      checkinReset();
+      delegateForReset();
+      getMemberReset();
       getMember(id);
     }
-  }, [id, open, getMember]);
+  }, [id, open, getMember, getMemberReset, checkinReset, delegateForReset]);
 
   const handleCheck = data => {
     const params = {

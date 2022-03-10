@@ -10,7 +10,7 @@ import {
   Button,
   Chip
 } from "@mui/material";
-import { grey, deepOrange, green } from "@mui/material/colors";
+import { grey, deepOrange, green, yellow } from "@mui/material/colors";
 import MemberListItemStatus from "./MemberListItemStatus";
 import { MemberDelegateForChip, MemberDelegatedByChip } from "./MemberDelegateChip";
 import MemberCardPaperLocation from "./MemberCardPaperLocation";
@@ -63,6 +63,7 @@ const MemberListItem = ({ member, onCheck, onCancelCheck, onCancelCheckFor, onCh
           variant="contained"
           fullWidth
           onClick={() => onCheck(id)}
+          sx={{ px: "12px"}}
         >
           報到
         </Button>
@@ -74,6 +75,7 @@ const MemberListItem = ({ member, onCheck, onCancelCheck, onCancelCheckFor, onCh
           variant="contained"
           fullWidth
           onClick={() => onCancelCheck(id)}
+          sx={{ px: "12px" }}
         >
           取消報到
         </Button>
@@ -86,6 +88,7 @@ const MemberListItem = ({ member, onCheck, onCancelCheck, onCancelCheckFor, onCh
           variant="contained"
           fullWidth
           onClick={() => onCancelCheckFor(id)}
+          sx={{ px: "12px" }}
         >
           取消代理出席
         </Button>
@@ -97,6 +100,7 @@ const MemberListItem = ({ member, onCheck, onCancelCheck, onCancelCheckFor, onCh
           variant="contained"
           fullWidth
           onClick={() => onCheckFor(id)}
+          sx={{ px: "12px" }}
         >
           加入代理出席
         </Button>
@@ -110,7 +114,7 @@ const MemberListItem = ({ member, onCheck, onCancelCheck, onCancelCheckFor, onCh
     !!delegate_for_member_id || checkin_status === "valid"
       ? green[700]
       : delegated_by_member_id
-      ? deepOrange[600]
+      ? yellow[700]
       : "primary.main";
 
   return (
