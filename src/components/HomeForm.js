@@ -89,6 +89,7 @@ const HomeForm = ({ form, onSearch, onClear }) => {
           sx={{ mb: 1 }}
           size="small"
           InputProps={{
+            ...(field === "license" ? { type: "number" } : {}),
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton onClick={handleKeywordClear} edge="end">
